@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Core
 {
-    internal class Cell
+    public class Cell
     {
         // Each cell can be a wall or empty cell
         public bool IsWall { get; set; } = false;

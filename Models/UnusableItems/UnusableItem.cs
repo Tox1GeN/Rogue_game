@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.UnusableItems
 {
-    internal class UnusableItem : Item
+    public class UnusableItem : Item
     {
         public string ShortDescription { get; set; }
         public UnusableItem(string name, string desc)

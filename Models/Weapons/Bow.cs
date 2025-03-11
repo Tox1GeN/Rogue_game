@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Weapons
 {
-    internal class Bow : WeaponItem
+    public class Bow : WeaponItem
     {
 
         public int PiercingStrength { get; private set; }

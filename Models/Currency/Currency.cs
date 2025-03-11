@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Currency
 {
-    internal enum CurrencyType { Coin, Gold }
-    internal class Currency : Item
+    public enum CurrencyType { Coin, Gold }
+    public class Currency : Item
     {
         // Private set for value and the type to liquidate the cheating:
         // - money duplication;

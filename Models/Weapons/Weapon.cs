@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Weapons
 {
-    internal class WeaponItem : Equipment
+    public class WeaponItem : Equipment
     {
         public int Damage { get; private set; }
 
@@ -23,6 +23,11 @@ namespace Rogue.Models.Weapons
         {
             Name = name;
             Damage = damage;
+        }
+
+        public override void ModifyDamage(int buffOrNerf)
+        {
+            Damage += buffOrNerf;
         }
     }
 }

@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Shields
 {
-    internal class ShieldItem : Equipment
+    public class ShieldItem : Equipment
     {
         public int ArmorBonus { get; private set; }
         public int ParryDamage { get; private set; }
         public int MiliSecondsToParry { get; private set; }
-        public override HandRequirement Requirement => HandRequirement.One;
 
         // The future idea to add short commet on equip action. For Example:
         // You've equipped Excalibur. You fill Blessed

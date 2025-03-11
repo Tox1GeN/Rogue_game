@@ -12,7 +12,7 @@ namespace Rogue.Models
         Left,
         Right
     }
-    internal class Player 
+    public class Player 
     {
         //Player's characteristics
         public int Strength { get; set; }

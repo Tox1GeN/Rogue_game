@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Core
 {
-    internal class Room
+    public class Room
     {
         // Game field
         public Cell[,] Grid { get; } = new Cell[20, 40];

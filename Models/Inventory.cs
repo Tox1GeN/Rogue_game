@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models
 {
-    internal class Inventory
+    public class Inventory
     {
         // Restrict outside modification (cheating)
         public List<Item> Items { get; private set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.UnusableItems
 {
-    internal class MysteriousNote : UnusableItem
+    public class MysteriousNote : UnusableItem
     {
         public string PartOfLore { get; set; }
         public MysteriousNote(string name, string shortDesc, string lorePart) : base(name, shortDesc)

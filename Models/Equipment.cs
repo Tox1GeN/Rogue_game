@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models
 {
-    internal abstract class Equipment : Item
+    public abstract class Equipment : Item
     {
         public override string GetDisplayName() => Name;
 
@@ -21,5 +21,8 @@ namespace Rogue.Models
             // In decorators undo the changes of the value of the player characteristic here
             Console.WriteLine($"You've unequipped the \"{GetDisplayName()}\"."); // {SecretMessage}");
         }
+
+        public virtual void ModifyDamage(int buffOrNerf) { }
+        public virtual void ModifyArmor(int buffOrNerf) { }
     }
 }
