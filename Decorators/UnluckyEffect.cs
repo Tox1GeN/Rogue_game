@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Rogue.Decorators
 {
-    internal class UnluckyEffect : ItemDecorator
+    public class UnluckyEffect : EquipmentDecorator
     {
-        public UnluckyEffect(Item itemToWrap) : base(itemToWrap) { }
+        public UnluckyEffect(Equipment equipmentToWrap) : base(equipmentToWrap) { }
 
-        public override string GetDisplayName() => $"{wrappedItem.GetDisplayName()} (Unlucky)";
+        public override string GetDisplayName() => $"{wrappedEquipment.GetDisplayName()} (Unlucky)";
 
         public override void Equip(Player player)
         {

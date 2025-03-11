@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace Rogue.Decorators
 {
-    internal class PowerfulEffect : ItemDecorator
+    public class PowerfulEffect : EquipmentDecorator
     {
-        public PowerfulEffect(Item itemToWrap) : base(itemToWrap) { }
+        public PowerfulEffect(Equipment equipmentToWrap) : base(equipmentToWrap)
+        {
+            wrappedEquipment.ModifyDamage(3);
+        }
 
-        public override string GetDisplayName() => $"{wrappedItem.GetDisplayName()} (Powerful)";
+        public override string GetDisplayName() => $"{wrappedEquipment.GetDisplayName()} (Powerful)";
 
         public override void Equip(Player player)
         {
             base.Equip(player);
-            player.Strength += 2;
-            Console.WriteLine("Strength increased by 2.");
+            Console.WriteLine("Damage of this weapon is increased by 2.");
         }
 
-        public override void Unequip(Player player)
-        {
-            base.Unequip(player);
-            player.Strength -= 2;
-            Console.WriteLine("Strength reduced by 2");
-        }
+        //public override void Unequip(Player player)
+        //{
+        //    base.Unequip(player);
+        //}
     }
 }
