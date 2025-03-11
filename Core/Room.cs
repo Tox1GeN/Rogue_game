@@ -43,8 +43,8 @@ namespace Rogue.Core
                 {
                     Console.Write(Grid[i, j].GetDisplayCell());
                 }
-            }
-            Console.WriteLine();
+                Console.WriteLine();
+            }            
         }
 
         public Item? RemoveTopItemAt(int row_Y, int col_X)

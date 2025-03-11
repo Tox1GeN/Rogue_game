@@ -11,7 +11,7 @@ namespace Rogue.Decorators
     {
         public ProtectiveEffect(Item itemToWrap) : base(itemToWrap) { }
 
-        public override string GetDisplayName() => $"{wrappedItem.GetDisplayName()} (Powerful)";
+        public override string GetDisplayName() => $"{wrappedItem.GetDisplayName()} (Protective)";
 
         public override void Equip(Player player)
         {
@@ -23,7 +23,7 @@ namespace Rogue.Decorators
         public override void Unequip(Player player)
         {
             base.Unequip(player);
-            player.Strength -= 3;
+            player.Health -= 3;
             Console.WriteLine("Health reduced by 3");
         }
     }
