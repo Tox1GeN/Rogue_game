@@ -1,0 +1,168 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' === Enumerations ===
+enum HandRequirement {
+    One
+    Two
+}
+
+enum CurrencyType {
+    Coin
+    Gold
+}
+
+enum Hand {
+    Left
+    Right
+}
+
+' === Base Classes ===
+abstract class Item {
+    +string Name {get; protected set;}
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+    +Requirement : HandRequirement
+}
+
+abstract class Equipment extends Item {
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+}
+
+' === Weapons ===
+class WeaponItem extends Equipment {
+    +Damage : int
+    +WeaponItem(name : string, damage : int)
+}
+class Sword extends WeaponItem {
+    +TwoHanded : bool
+    +Sword(name : string, damage : int, twoHanded : bool)
+    +Requirement : HandRequirement
+}
+
+' === Unusable Items ===
+class UnusableItem extends Item {
+    +ShortDescripton : string
+    +UnusableItem(name : string, desc : string)
+    +GetDisplayDescription() : string
+}
+class Egg extends UnusableItem {
+    +Egg(name : string = "EASTER EGG", desc : string = "???")
+}
+class Rubbish extends UnusableItem {
+    +Rubbish(name : string = "Rubbish", desc : string = "It's stinks. And you too now.")
+}
+class MysteriousNote extends UnusableItem {
+    +partOfLore : string
+    +MysteriousNote(name : string, shortDesc : string, lorePart : string)
+}
+
+' === Currency ===
+class Currency extends Item {
+    +Value : int
+    +Type : CurrencyType
+    +Currency(type : CurrencyType, value : int)
+    +GetDisplayName() : string
+}
+
+' === Decorators ===
+abstract class ItemDecorator extends Item {
+    -wrappedItem : Item
+    +ItemDecorator(itemToWrap : Item)
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+}
+class PowerfulEffect extends ItemDecorator {
+    +PowerfulEffect(itemToWrap : Item)
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+}
+class ProtectiveEffect extends ItemDecorator {
+    +ProtectiveEffect(itemToWrap : Item)
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+}
+class UnluckyEffect extends ItemDecorator {
+    +UnluckyEffect(itemToWrap : Item)
+    +GetDisplayName() : string
+    +Equip(player : Player)
+    +Unequip(player : Player)
+}
+
+' === Inventory ===
+class Inventory {
+    +Items : List<Item>
+    +Capacity : int
+    +Inventory(currentCapacity : int = 7)
+    +AddItem(item : Item) : bool
+    +LayOutOfInventoryAt(inventoryIndex : int) : Item?
+}
+
+' === Player ===
+class Player {
+    +Strength : int
+    +Dexterity : int
+    +Health : int
+    +Luck : int
+    +Aggression : int
+    +Wisdom : int
+    +Inventory : Inventory
+    +LeftHand : Item?
+    +RightHand : Item?
+    +Player()
+    +Move()
+    +PickupItem(room : Room) : bool
+    +DropItem(inventoryIndex : int, room : Room) : bool
+    +Equip(inventoryIndex : int) : bool
+    +Unequip(whichHand : Hand, room : Room) : bool
+}
+
+' === Room and Cell ===
+class Room {
+    +Grid : Cell[,]
+    +PlayerPosition : (int, int)
+    +Room()
+    +Render()
+    +RemoveTopItemAt(row_Y : int, col_X : int) : Item?
+    +ReceiveDropItem(row_Y : int, col_X : int, dropItem : Item)
+}
+
+class Cell {
+    +IsWall : bool
+    +Items : Stack<Item>
+    +IsPlayerHere : bool
+    +GetDisplayCell() : char
+}
+
+' === Associations ===
+Player "1" *-- "1" Inventory
+Player "0..1" --> "0..1" LeftHand : equips
+Player "0..1" --> "0..1" RightHand : equips
+Room "1" o-- "*" Cell : contains
+Cell "0..*" --> "0..1" Item : holds
+Inventory "1" --> "*" Item : stores
+
+' === Inheritance Relationships ===
+Item <|-- Equipment
+Equipment <|-- WeaponItem
+WeaponItem <|-- Sword
+
+Item <|-- UnusableItem
+UnusableItem <|-- Egg
+UnusableItem <|-- Rubbish
+UnusableItem <|-- MysteriousNote
+
+Item <|-- Currency
+
+Item <|-- ItemDecorator
+ItemDecorator <|-- PowerfulEffect
+ItemDecorator <|-- ProtectiveEffect
+ItemDecorator <|-- UnluckyEffect
+
+@enduml
