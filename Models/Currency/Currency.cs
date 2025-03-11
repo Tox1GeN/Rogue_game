@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Models
+namespace Rogue.Models.Currency
 {
     internal enum CurrencyType { Coin, Gold }
     internal class Currency : Item

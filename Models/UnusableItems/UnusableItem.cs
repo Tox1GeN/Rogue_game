@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Models
+namespace Rogue.Models.UnusableItems
 {
-    internal class UnusableItem: Item
+    internal class UnusableItem : Item
     {
-        public string Descripton { get; set; }
+        public string ShortDescription { get; set; }
         public UnusableItem(string name, string desc)
         {
             Name = name;
-            Descripton = desc;
+            ShortDescription = desc;
         }
 
         public override string GetDisplayName() => Name;
-        public string GetDisplayDescription() => Descripton;
+        public string GetDisplayDescription() => ShortDescription;
     }
 }
