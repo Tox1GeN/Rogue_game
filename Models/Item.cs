@@ -12,7 +12,7 @@ namespace Rogue.Models
         One,   // For one-handed items
         Two    // For two-handed items
     }
-    internal class Item
+    internal abstract class Item
     {
         public virtual string Name { get; protected set; }
         public virtual string GetDisplayName() => Name;
