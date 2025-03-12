@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models.Interfaces;
 
 namespace Rogue.Models
 {
-    public abstract class Equipment : Item
+    public abstract class Equipment : Item, IEquipment
     {
         public override string GetDisplayName() => Name;
-
+        public override bool CanEquip => true;
         public override void Equip(Player player)
         {
             // In decorators change a value of a player characteristic here

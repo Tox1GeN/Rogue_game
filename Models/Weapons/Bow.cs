@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Weapons
 {
-    public class Bow : WeaponItem
+    public class Bow : Weapon
     {
-
         public int PiercingStrength { get; private set; }
         public int DistanceOfAttack { get; private set; }
-
-        public Bow(string name, int damage, int pierce, int distance) : base(name, damage)
+        public Bow(string name, int damage, int pierce, int distance)
         {
+            Name = name;
+            Damage = damage;
             PiercingStrength = pierce;
             DistanceOfAttack = distance;
         }

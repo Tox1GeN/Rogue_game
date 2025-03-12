@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Models.Weapons
+namespace Rogue.Models.Weapons.TwoHanded
 {
-    public class Sword : Weapon
+    public class Mace : TwoHandedWeapon
     {
-        public Sword(string name, int damage)
+        public Mace(string name, int damage)
         {
             Name = name;
             Damage = damage;

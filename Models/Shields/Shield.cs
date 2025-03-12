@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models.Interfaces;
 
 namespace Rogue.Models.Shields
 {
-    public class ShieldItem : Equipment
+    public class Shield : Equipment, IShield
     {
-        public int ArmorBonus { get; private set; }
+        public int Armor { get; private set; }
         public int ParryDamage { get; private set; }
-        public int MiliSecondsToParry { get; private set; }
+        public int MilliSecondsToParry { get; private set; }
 
         // The future idea to add short commet on equip action. For Example:
         // You've equipped Excalibur. You fill Blessed
@@ -20,11 +21,11 @@ namespace Rogue.Models.Shields
         // You've unequipped the Curse Sword. You've not felt better.
         // public string SecretMessage { get; set; }
 
-        public ShieldItem(int armor, int parryDmg, int timeParry)
+        public Shield(int armor, int parryDmg, int timeParry)
         {
-            ArmorBonus = armor;
+            Armor = armor;
             ParryDamage = parryDmg;
-            MiliSecondsToParry = timeParry;
+            MilliSecondsToParry = timeParry;
         }
     }
 }
