@@ -7,11 +7,6 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models
 {
-    internal enum Hand
-    {
-        Left,
-        Right
-    }
     public class Player 
     {
         //Player's characteristics
@@ -26,8 +21,7 @@ namespace Rogue.Models
         public Inventory Inventory { get; set; }
 
         // Hands Logic
-        public Item? LeftHand { get; set; }
-        public Item? RightHand { get; set; }
+        public Item?[] Hands { get; private set; }
 
         // Constructor for the default player:
         public Player()
@@ -39,6 +33,7 @@ namespace Rogue.Models
             Aggression = 0;
             Wisdom = 0;
             Inventory = new Inventory();
+            Hands = new Item?[2]; // index 0: left hand, index 1: right hand
         }
 
         // Player Actions
@@ -49,13 +44,13 @@ namespace Rogue.Models
 
         public bool PickupItem(Room currentRoom)
         {
-            if ( currentRoom == null)
+            if (currentRoom == null)
                 return false;
 
             (int row_X, int col_Y) = currentRoom.PlayerPosition;
 
             Item? pickup = currentRoom.RemoveTopItemAt(row_X, col_Y);
-            if ( pickup == null )
+            if (pickup == null)
                 return false;
 
             return Inventory.AddItem(pickup);
@@ -77,7 +72,7 @@ namespace Rogue.Models
         }
 
         // TODO: implementation after implemented Weapons, Decorators, etc.
-        public bool Equip(int inventoryIndex)
+        public bool Equip(int inventoryIndex, int handNumber)
         {
             Item? itemToEquip = Inventory.LayOutOfInventoryAt(inventoryIndex);
             if (itemToEquip == null)
@@ -86,16 +81,16 @@ namespace Rogue.Models
                 return false;
             }
 
-            if (itemToEquip.Requirement == HandRequirement.None)
+            if (!itemToEquip.CanEquip)
             {
                 Console.WriteLine("This is unequable");
                 Inventory.AddItem(itemToEquip);
                 return false;
             }
 
-            if (itemToEquip.Requirement == HandRequirement.Two)
+            if (itemToEquip.TwoHanded)
             {
-                if (RightHand != null || LeftHand != null)
+                if (Hands[0] != null || Hands[1] != null)
                 {
                     Console.WriteLine("It is so proud that it cannot be used with other weapons.");
                     Inventory.AddItem(itemToEquip);
@@ -103,26 +98,27 @@ namespace Rogue.Models
                 }
                 else
                 {
-                    LeftHand = itemToEquip;
-                    RightHand = itemToEquip;
+                    Hands[0] = itemToEquip;
+                    Hands[1] = itemToEquip;
                 }
                 
             }
-            else if (itemToEquip.Requirement == HandRequirement.One)
+            else
             {
-                if (RightHand != null && LeftHand != null)
+                if (Hands[0] != null && Hands[1] != null)
                 {
                     Console.WriteLine("Sometimes third arm can be a really good mutation...");
                     Inventory.AddItem(itemToEquip);
                     return false;
                 }
-                else
+                else if (Hands[handNumber] != null)
                 {
-                    if(LeftHand == null)
-                        LeftHand = itemToEquip;
-                    else if (RightHand == null)
-                        RightHand = itemToEquip;
-                }
+                    Console.WriteLine("Maybe, try another hand...");
+                    Inventory.AddItem(itemToEquip);
+                    return false;
+                }                    
+                else
+                    Hands[handNumber] = itemToEquip;
             }
 
             // Message about succes equipment.
@@ -131,35 +127,23 @@ namespace Rogue.Models
 
             return true;
         }
-        public bool Unequip(Hand whichHand, Room currentRoom)
+        public bool Unequip(int handNumber, Room currentRoom)
         {
-            Item itemToUnequip;
-            if(whichHand == Hand.Right)
+            if (Hands[handNumber] == null)
             {
-                if(RightHand == null)
-                {
-                    Console.WriteLine("Your right hand is already free.");
-                    return false;
-                }
+                Console.WriteLine("This hand is already free.");
+                return false;
+            }
 
-                itemToUnequip = RightHand;
-                if (itemToUnequip.Requirement == HandRequirement.Two)
-                    LeftHand = null;
-                RightHand = null;
+            Item itemToUnequip = Hands[handNumber]!;
+
+            if (Hands[handNumber]!.TwoHanded)
+            {
+                Hands[0] = null;
+                Hands[1] = null;
             }
             else
-            {
-                if (LeftHand == null)
-                {
-                    Console.WriteLine("Your left hand is already free.");
-                    return false;
-                }
-
-                itemToUnequip = LeftHand;
-                if (itemToUnequip.Requirement == HandRequirement.Two)
-                    RightHand = null;
-                LeftHand = null;
-            }
+                Hands[handNumber] = null;
 
             itemToUnequip.Unequip(this);
             HandleUnequipItem(itemToUnequip, currentRoom);
