@@ -1,168 +1,252 @@
 @startuml
-skinparam classAttributeIconSize 0
-
-' === Enumerations ===
-enum HandRequirement {
-    One
-    Two
+' ============================
+' Interfaces
+' ============================
+interface IItem {
+  +Name : string {readOnly}
+  +GetDisplayName() : string
+  +CanEquip : bool {readOnly}
+  +TwoHanded : bool {readOnly}
+  +Equip(player : Player)
+  +Unequip(player : Player)
 }
 
-enum CurrencyType {
-    Coin
-    Gold
+interface IEquipment {
+  +ModifyDamage(buffOrNerf : int)
+  +ModifyArmor(buffOrNerf : int)
 }
 
-enum Hand {
-    Left
-    Right
+interface IWeapon {
+  +Damage : int {readOnly}
 }
 
-' === Base Classes ===
+interface IShield {
+  +Armor : int {readOnly}
+  +ParryDamage : int {readOnly}
+  +MilliSecondsToParry : int {readOnly}
+}
+
+' ============================
+' Abstract Classes and Base Items
+' ============================
 abstract class Item {
-    +string Name {get; protected set;}
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
-    +Requirement : HandRequirement
+  - Name : string
+  +GetDisplayName() : string
+  +CanEquip() : bool
+  +TwoHanded() : bool
+  +Equip(player : Player)
+  +Unequip(player : Player)
 }
 
-abstract class Equipment extends Item {
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
+abstract class Equipment extends Item implements IEquipment {
+  +Equip(player : Player)
+  +Unequip(player : Player)
+  +ModifyDamage(buffOrNerf : int)
+  +ModifyArmor(buffOrNerf : int)
 }
 
-' === Weapons ===
-class WeaponItem extends Equipment {
-    +Damage : int
-    +WeaponItem(name : string, damage : int)
-}
-class Sword extends WeaponItem {
-    +TwoHanded : bool
-    +Sword(name : string, damage : int, twoHanded : bool)
-    +Requirement : HandRequirement
-}
-
-' === Unusable Items ===
-class UnusableItem extends Item {
-    +ShortDescripton : string
-    +UnusableItem(name : string, desc : string)
-    +GetDisplayDescription() : string
-}
-class Egg extends UnusableItem {
-    +Egg(name : string = "EASTER EGG", desc : string = "???")
-}
-class Rubbish extends UnusableItem {
-    +Rubbish(name : string = "Rubbish", desc : string = "It's stinks. And you too now.")
-}
-class MysteriousNote extends UnusableItem {
-    +partOfLore : string
-    +MysteriousNote(name : string, shortDesc : string, lorePart : string)
+' ============================
+' Decorator for Equipment
+' ============================
+abstract class EquipmentDecorator extends Equipment {
+  - wrappedEquipment : Equipment
+  +EquipmentDecorator(equipmentToWrap : Equipment)
+  +GetDisplayName() : string
+  +Equip(player : Player)
+  +Unequip(player : Player)
+  +ModifyDamage(buffOrNerf : int)
+  +ModifyArmor(buffOrNerf : int)
+  +TwoHanded() : bool
 }
 
-' === Currency ===
+' ----------------------------
+' Concrete Decorators
+' ----------------------------
+class LegendaryEffect extends EquipmentDecorator {
+  +LegendaryEffect(equipmentToWrap : Equipment)
+  +GetDisplayName() : string
+  +Equip(player : Player)
+  +Unequip(player : Player)
+}
+
+class PowerfulEffect extends EquipmentDecorator {
+  +PowerfulEffect(equipmentToWrap : Equipment)
+  +GetDisplayName() : string
+  +Equip(player : Player)
+}
+
+class ProtectiveEffect extends EquipmentDecorator {
+  +ProtectiveEffect(equipmentToWrap : Equipment)
+  +GetDisplayName() : string
+  +Equip(player : Player)
+}
+
+class UnluckyEffect extends EquipmentDecorator {
+  +UnluckyEffect(equipmentToWrap : Equipment)
+  +GetDisplayName() : string
+  +Equip(player : Player)
+  +Unequip(player : Player)
+}
+
+' ============================
+' Weapons Hierarchy
+' ============================
+abstract class Weapon extends Equipment implements IWeapon {
+  - Damage : int
+  +Damage() : int
+  +ModifyDamage(buffOrNerf : int)
+  +TwoHanded() : bool
+}
+
+abstract class TwoHandedWeapon extends Weapon {
+  +TwoHanded() : bool
+}
+
+class Mace extends TwoHandedWeapon {
+  +Mace(name : string, damage : int)
+}
+
+class Bow extends Weapon {
+  - PiercingStrength : int
+  - DistanceOfAttack : int
+  +Bow(name : string, damage : int, pierce : int, distance : int)
+}
+
+class MagicStaff extends Weapon {
+  - ManaUsage : int
+  - SplashDamage : bool
+  - DistanceOfAttack : int
+  +MagicStaff(name : string, damage : int, manaUsage : int, splashDmg : bool, distance : int)
+}
+
+class Sword extends Weapon {
+  +Sword(name : string, damage : int)
+}
+
+' ============================
+' Shield
+' ============================
+class Shield extends Equipment implements IShield {
+  - Armor : int
+  - ParryDamage : int
+  - MilliSecondsToParry : int
+  +Shield(armor : int, parryDmg : int, timeParry : int)
+}
+
+' ============================
+' Currency
+' ============================
+enum CurrencyType {
+  Coin
+  Gold
+}
+
 class Currency extends Item {
-    +Value : int
-    +Type : CurrencyType
-    +Currency(type : CurrencyType, value : int)
-    +GetDisplayName() : string
+  - Value : int
+  - Type : CurrencyType
+  +Currency(type : CurrencyType, value : int)
+  +GetDisplayName() : string
 }
 
-' === Decorators ===
-abstract class ItemDecorator extends Item {
-    -wrappedItem : Item
-    +ItemDecorator(itemToWrap : Item)
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
-}
-class PowerfulEffect extends ItemDecorator {
-    +PowerfulEffect(itemToWrap : Item)
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
-}
-class ProtectiveEffect extends ItemDecorator {
-    +ProtectiveEffect(itemToWrap : Item)
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
-}
-class UnluckyEffect extends ItemDecorator {
-    +UnluckyEffect(itemToWrap : Item)
-    +GetDisplayName() : string
-    +Equip(player : Player)
-    +Unequip(player : Player)
+' ============================
+' Unusable Items
+' ============================
+class UnusableItem extends Item {
+  - ShortDescription : string
+  +UnusableItem(name : string, desc : string)
+  +GetDisplayName() : string
+  +GetDisplayDescription() : string
 }
 
-' === Inventory ===
-class Inventory {
-    +Items : List<Item>
-    +Capacity : int
-    +Inventory(currentCapacity : int = 7)
-    +AddItem(item : Item) : bool
-    +LayOutOfInventoryAt(inventoryIndex : int) : Item?
+class Rubbish extends UnusableItem {
+  +Rubbish(name : string = "Rubbish", desc : string = "It's stinks. And you too now.")
 }
 
-' === Player ===
-class Player {
-    +Strength : int
-    +Dexterity : int
-    +Health : int
-    +Luck : int
-    +Aggression : int
-    +Wisdom : int
-    +Inventory : Inventory
-    +LeftHand : Item?
-    +RightHand : Item?
-    +Player()
-    +Move()
-    +PickupItem(room : Room) : bool
-    +DropItem(inventoryIndex : int, room : Room) : bool
-    +Equip(inventoryIndex : int) : bool
-    +Unequip(whichHand : Hand, room : Room) : bool
+class MysteriousNote extends UnusableItem {
+  - PartOfLore : string
+  +MysteriousNote(name : string, shortDesc : string, lorePart : string)
 }
 
-' === Room and Cell ===
-class Room {
-    +Grid : Cell[,]
-    +PlayerPosition : (int, int)
-    +Room()
-    +Render()
-    +RemoveTopItemAt(row_Y : int, col_X : int) : Item?
-    +ReceiveDropItem(row_Y : int, col_X : int, dropItem : Item)
+class Egg extends UnusableItem {
+  +Egg(name : string = "EASTER EGG", desc : string = "???")
 }
 
+' ============================
+' Core Game Elements
+' ============================
 class Cell {
-    +IsWall : bool
-    +Items : Stack<Item>
-    +IsPlayerHere : bool
-    +GetDisplayCell() : char
+  - IsWall : bool
+  - Items : Stack<Item>
+  - IsPlayerHere : bool
+  +GetDisplayCell() : char
 }
 
-' === Associations ===
-Player "1" *-- "1" Inventory
-Player "0..1" --> "0..1" LeftHand : equips
-Player "0..1" --> "0..1" RightHand : equips
-Room "1" o-- "*" Cell : contains
-Cell "0..*" --> "0..1" Item : holds
-Inventory "1" --> "*" Item : stores
+class Room {
+  - Grid : Cell[20,40]
+  - PlayerPosition : (int, int)
+  +Room()
+  +Render()
+  +RemoveTopItemAt(row_Y : int, col_X : int) : Item?
+  +ReceiveDropItem(row_Y : int, col_X : int, dropItem : Item)
+}
 
-' === Inheritance Relationships ===
+class Inventory {
+  - Items : List<Item>
+  - Capacity : int
+  +Inventory(currentCapacity : int = 7)
+  +AddItem(pickup : Item) : bool
+  +LayOutOfInventoryAt(index : int) : Item?
+}
+
+class Player {
+  - Strength : int
+  - Dexterity : int
+  - Health : int
+  - Luck : int
+  - Aggression : int
+  - Wisdom : int
+  - Inventory : Inventory
+  - Hands : Item?[2]
+  +Player()
+  +Move()  ' TODO: implement movement
+  +PickupItem(currentRoom : Room) : bool
+  +DropItem(inventoryIndex : int, currentRoom : Room) : bool
+  +Equip(inventoryIndex : int, handNumber : int) : bool
+  +Unequip(handNumber : int, currentRoom : Room) : bool
+}
+
+class Program {
+  +Main(args : string[])
+}
+
+' ============================
+' Relationships
+' ============================
+IItem <|.. Item
+IEquipment <|.. Equipment
+EquipmentDecorator ..> Equipment : "wraps"
+
 Item <|-- Equipment
-Equipment <|-- WeaponItem
-WeaponItem <|-- Sword
+Equipment <|-- Weapon
+Weapon <|-- TwoHandedWeapon
+TwoHandedWeapon <|-- Mace
+Weapon <|-- Bow
+Weapon <|-- MagicStaff
+Weapon <|-- Sword
 
-Item <|-- UnusableItem
-UnusableItem <|-- Egg
-UnusableItem <|-- Rubbish
-UnusableItem <|-- MysteriousNote
+Equipment <|-- Shield
 
 Item <|-- Currency
+Item <|-- UnusableItem
+UnusableItem <|-- Rubbish
+UnusableItem <|-- MysteriousNote
+UnusableItem <|-- Egg
 
-Item <|-- ItemDecorator
-ItemDecorator <|-- PowerfulEffect
-ItemDecorator <|-- ProtectiveEffect
-ItemDecorator <|-- UnluckyEffect
+Player "1" -- "1" Inventory : has
+Room "1" -- "*" Cell : contains
+Cell "1" -- "*" Item : holds
+
+Program ..> Room : "creates/uses"
+Program ..> Player : "creates/uses"
 
 @enduml
