@@ -22,10 +22,5 @@ namespace Rogue.Decorators
             base.Equip(player);
             Console.WriteLine("Armor of this equipment is increased by 3.");
         }
-
-        //public override void Unequip(Player player)
-        //{
-        //    base.Unequip(player);
-        //}
     }
 }

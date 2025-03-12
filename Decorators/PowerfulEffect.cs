@@ -21,10 +21,5 @@ namespace Rogue.Decorators
             base.Equip(player);
             Console.WriteLine("Damage of this weapon is increased by 2.");
         }
-
-        //public override void Unequip(Player player)
-        //{
-        //    base.Unequip(player);
-        //}
     }
 }

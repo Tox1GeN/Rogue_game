@@ -13,6 +13,7 @@ namespace Rogue.Decorators
         {
             wrappedEquipment.ModifyDamage(10);
         }
+        public override string GetDisplayName() => $"{wrappedEquipment.GetDisplayName()} (Legendary)";
 
         public override void Equip(Player player)
         {
@@ -37,7 +38,5 @@ namespace Rogue.Decorators
 
             Console.WriteLine("All the stats are decreased by 2.");
         }
-
-
     }
 }

@@ -18,6 +18,8 @@ namespace Rogue.Decorators
             wrappedEquipment = equipmentToWrap;
         }
 
+        public override bool TwoHanded => wrappedEquipment.TwoHanded;
+
         public override string GetDisplayName() => wrappedEquipment.GetDisplayName();
 
         public override void Equip(Player player) => wrappedEquipment.Equip(player);

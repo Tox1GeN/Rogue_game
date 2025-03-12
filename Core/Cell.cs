@@ -30,9 +30,5 @@ namespace Rogue.Core
             // Otherwise it is an empty cell
             return ' ';
         }
-
-        // Consturctor ?
-        //public Cell(){}
-
     }
 }
