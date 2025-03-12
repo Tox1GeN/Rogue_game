@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Models
+namespace Rogue.Models.Interfaces
 {
     public interface IItem
     {
         string Name { get; }
         string GetDisplayName();
-
-        void Equip(Player player);
-        void Unequip(Player player);
+        bool CanEquip { get; }
+        bool TwoHanded { get; }
+        void Equip(Player player) { }
+        void Unequip(Player player) { }
     }
 }
-

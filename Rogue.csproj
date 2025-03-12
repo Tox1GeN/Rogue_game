@@ -11,7 +11,6 @@
     <Folder Include="Core\" />
     <Folder Include="Models\Shields\" />
     <Folder Include="Models\UnusableItems\" />
-    <Folder Include="Models\Weapons\" />
     <Folder Include="Models\Currency\" />
     <Folder Include="UI\" />
   </ItemGroup>
