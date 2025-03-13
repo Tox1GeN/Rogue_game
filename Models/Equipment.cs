@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rogue.Models.Interfaces;
+using Rogue.UI;
 
 namespace Rogue.Models
 {
@@ -14,13 +15,13 @@ namespace Rogue.Models
         public override void Equip(Player player)
         {
             // In decorators change a value of a player characteristic here
-            Console.WriteLine($"You've equipped the \"{GetDisplayName()}\"."); // {ShortReview}");
+            Render.AddActionLine($"You've equipped the \"{GetDisplayName()}\"."); // {ShortReview}");
         }
 
         public override void Unequip(Player player)
         {
             // In decorators undo the changes of the value of the player characteristic here
-            Console.WriteLine($"You've unequipped the \"{GetDisplayName()}\"."); // {SecretMessage}");
+            Render.AddActionLine($"You've unequipped the \"{GetDisplayName()}\"."); // {SecretMessage}");
         }
 
         public virtual void ModifyDamage(int buffOrNerf) { }

@@ -13,5 +13,7 @@ namespace Rogue.Models.Weapons
             Name = name;
             Damage = damage;
         }
+
+        public override string GetDisplayDmg () => base.GetDisplayDmg();
     }
 }

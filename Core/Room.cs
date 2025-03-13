@@ -1,4 +1,8 @@
 ﻿using Rogue.Models;
+using Rogue.Models.Weapons;
+using Rogue.Models.Weapons.TwoHanded;
+using Rogue.Decorators;
+using Rogue.Models.Currency;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -27,6 +31,35 @@ namespace Rogue.Core
                     Grid[i, j] = new Cell();
                 }
             }
+
+            // Generate the Level:
+
+            // Filling the walls:
+            for (int i = 3; i < 40; i++)
+            {
+                Grid[0, i].IsWall = true;
+            }
+            for (int i = 0; i < 40; i++)
+            {
+                Grid[19, i].IsWall = true;
+            }
+            for (int i = 0; i < 20; i++)
+            {
+                Grid[i, 39].IsWall = true;
+            }
+            for (int i = 3; i < 20; i++)
+            {
+                Grid[i, 0].IsWall = true;
+            }
+
+            // Put items on the floor:
+            // Sword in the cell [2,10]
+            Sword sword = new Sword("Excalibur", 10);
+
+            Grid[2, 10].Items.Push(new LegendaryEffect(sword));
+
+            // Some gold in the cell [1,1]
+            Grid[1, 1].Items.Push(new Mace("Morning Star", 5));
 
             // Spawn the Player
             Grid[0, 0].IsPlayerHere = true;

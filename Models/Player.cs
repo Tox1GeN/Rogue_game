@@ -1,4 +1,6 @@
 ﻿using Rogue.Core;
+using Rogue.UI;
+using Rogue.Models.Currency;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,10 @@ namespace Rogue.Models
         // Player has inventory
         public Inventory Inventory { get; set; }
 
+        // Money talks
+        public Coin Coins { get; private set; }
+        public Gold GoldValue { get; private set; }
+
         // Hands Logic
         public Item?[] Hands { get; private set; }
 
@@ -33,15 +39,37 @@ namespace Rogue.Models
             Aggression = 0;
             Wisdom = 0;
             Inventory = new Inventory();
+            Coins = new Coin(0);
+            GoldValue = new Gold(0);
             Hands = new Item?[2]; // index 0: left hand, index 1: right hand
         }
 
         // Player Actions
-        public void Move (/*future parameteres*/)
+        public void Move (int deltaX, int deltaY, Room currentRoom)
         {
-            // TODO: Move implementation
-        }
+            var (row, col) = currentRoom.PlayerPosition;
 
+            int newRow = row + deltaX;
+            int newCol = col + deltaY;
+
+            // Out of the boundaries 
+            if(newRow < 0 || newRow > 19 || newCol < 0 || newCol > 39)
+                return;
+
+            if (currentRoom.Grid[newRow, newCol].IsWall)
+                return;
+
+            // Otherwise move the player
+            currentRoom.Grid[row, col].IsPlayerHere = false;
+            currentRoom.Grid[newRow, newCol].IsPlayerHere = true;
+
+            currentRoom.PlayerPosition = (newRow, newCol);
+
+
+            Render.RedrawCell(row, col, currentRoom);
+            Render.RedrawCell(newRow, newCol, currentRoom);
+            Render.RenderSidePanel(this, currentRoom);
+        }
         public bool PickupItem(Room currentRoom)
         {
             if (currentRoom == null)
@@ -53,47 +81,39 @@ namespace Rogue.Models
             if (pickup == null)
                 return false;
 
-            return Inventory.AddItem(pickup);
-        }
 
+            if (Inventory.AddItem(pickup))
+            {
+                Render.AddActionLine($"You've picked up the {pickup.GetDisplayName()}");
+                Render.FinalizeActionMessage();
+                return true;
+            }
+            else
+                return false;
+        }
         public bool DropItem(int inventoryIndex, Room currentRoom)
         {
             if (currentRoom == null)
                 return false;
 
-            Item? itemDrop = Inventory.LayOutOfInventoryAt(inventoryIndex);
+            Item? itemDrop = Inventory.ItemAt(inventoryIndex);
             if (itemDrop == null)
                 return false;
+            else
+                Inventory.RemoveItemAt(inventoryIndex);
 
             (int row_X, int col_Y) = currentRoom.PlayerPosition;
             currentRoom.ReceiveDropItem(row_X, col_Y, itemDrop);
 
             return true;
         }
-
-        // TODO: implementation after implemented Weapons, Decorators, etc.
-        public bool Equip(int inventoryIndex, int handNumber)
+        public bool Equip(Item itemToEquip, int handNumber)
         {
-            Item? itemToEquip = Inventory.LayOutOfInventoryAt(inventoryIndex);
-            if (itemToEquip == null)
-            {
-                Console.WriteLine("Nice try. Look into your inventory one more time. Please...");
-                return false;
-            }
-
-            if (!itemToEquip.CanEquip)
-            {
-                Console.WriteLine("This is unequable");
-                Inventory.AddItem(itemToEquip);
-                return false;
-            }
-
             if (itemToEquip.TwoHanded)
             {
                 if (Hands[0] != null || Hands[1] != null)
                 {
-                    Console.WriteLine("It is so proud that it cannot be used with other weapons.");
-                    Inventory.AddItem(itemToEquip);
+                    Render.AddActionLine("It is so proud that it cannot be used with other weapons.");
                     return false;
                 }
                 else
@@ -107,14 +127,12 @@ namespace Rogue.Models
             {
                 if (Hands[0] != null && Hands[1] != null)
                 {
-                    Console.WriteLine("Sometimes third arm can be a really good mutation...");
-                    Inventory.AddItem(itemToEquip);
+                    Render.AddActionLine("Sometimes third arm can be a really good mutation...");
                     return false;
                 }
                 else if (Hands[handNumber] != null)
                 {
-                    Console.WriteLine("Maybe, try another hand...");
-                    Inventory.AddItem(itemToEquip);
+                    Render.AddActionLine("Maybe, try another hand...");
                     return false;
                 }                    
                 else
@@ -131,7 +149,7 @@ namespace Rogue.Models
         {
             if (Hands[handNumber] == null)
             {
-                Console.WriteLine("This hand is already free.");
+                Render.AddActionLine("This hand is already free.");
                 return false;
             }
 
@@ -160,13 +178,16 @@ namespace Rogue.Models
         {
             if (Inventory.Items.Count == Inventory.Capacity)
             {
-                Console.WriteLine("Your inventory is full. The item has been dropped on the floor.");
+                Render.AddActionLine("Your inventory is full. The item has been dropped on the floor.");
 
                 (int row_X, int col_Y) = currentRoom.PlayerPosition;
                 currentRoom.ReceiveDropItem(row_X, col_Y, itemToUnequip);
             }
             else
-                Inventory.AddItem(itemToUnequip);
+            {
+                if (Inventory.AddItem(itemToUnequip))
+                    Render.AddActionLine("You've hid it in the bag");
+            }
         }
     }
 }

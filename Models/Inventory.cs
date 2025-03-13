@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.UI;
 
 namespace Rogue.Models
 {
@@ -24,23 +25,35 @@ namespace Rogue.Models
         {
             // Can't store an item in the full inventory
             if (Items.Count == Capacity)
+            {
+                Render.AddActionLine($"Your Inventory is Full!");
+                Render.FinalizeActionMessage();
                 return false;
+            }
             
             //Otherwise add this item
             Items.Add(pickup);
             return true;
         }
 
-        public Item? LayOutOfInventoryAt(int inventoryIndex)
+        public void RemoveItemAt(int inventoryIndex)
         {
             // Can't remove something not existing
             if (inventoryIndex < 0 || inventoryIndex >= Items.Count)
+                return;
+
+            // Otherwise remove out from 'bag' this item
+            Items.RemoveAt(inventoryIndex);
+        }
+
+        public Item? ItemAt(int inventoryIndex)
+        {
+            // Can't get something not existing
+            if (inventoryIndex < 0 || inventoryIndex >= Items.Count)
                 return null;
 
-            // Otherwise lay out from 'bag' this item
-            Item dropItem = Items[inventoryIndex];
-            Items.RemoveAt(inventoryIndex);
-            return dropItem;
+            // Otherwise return it
+            return Items[inventoryIndex];
         }
     }
 }

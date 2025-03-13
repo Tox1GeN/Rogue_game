@@ -24,5 +24,6 @@ namespace Rogue.Models.Weapons
         {
             Damage += buffOrNerf;
         }
+        public virtual string GetDisplayDmg() => $"Damage: {Damage}";
     }
 }
