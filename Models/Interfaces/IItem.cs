@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rogue.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ namespace Rogue.Models.Interfaces
         bool TwoHanded { get; }
         void Equip(Player player) { }
         void Unequip(Player player) { }
+        void PickUp(Player playerm, Room currentRoom) { }
     }
 }

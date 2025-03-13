@@ -9,5 +9,6 @@ namespace Rogue.Models.Interfaces
     public interface IWeapon
     {
         int Damage { get; }
+        string GetDisplayDmg();
     }
 }
