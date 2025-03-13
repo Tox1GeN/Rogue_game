@@ -1,4 +1,5 @@
 ﻿using Rogue.Models;
+using Rogue.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +18,14 @@ namespace Rogue.Decorators
         {
             base.Equip(player);
             player.Luck -= 5;
-            Console.WriteLine("Luck decreased by 5.");
+            Render.AddActionLine("Luck decreased by 5.");
         }
 
         public override void Unequip(Player player)
         {
             base.Unequip(player);
             player.Luck += 5;
-            Console.WriteLine("Luck restored by 5");
+            Render.AddActionLine("Luck restored by 5");
         }
     }
 }

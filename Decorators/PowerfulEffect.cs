@@ -1,4 +1,5 @@
 ﻿using Rogue.Models;
+using Rogue.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Rogue.Decorators
         public override void Equip(Player player)
         {
             base.Equip(player);
-            Console.WriteLine("Damage of this weapon is increased by 2.");
+            Render.AddActionLine("Damage of this weapon is increased by 2.");
         }
     }
 }
