@@ -19,7 +19,7 @@ namespace Rogue
 
             currentRoom.Render();
 
-            Render.RenderSidePanel(player, currentRoom);
+            Render.Instance.RenderSidePanel(player, currentRoom);
 
             while (true)
             {

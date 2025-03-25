@@ -8,11 +8,32 @@ using System.Threading.Tasks;
 
 namespace Rogue.UI
 {
-    public class Render
+    public sealed class Render
     {
 
+        // The single instance of Render (lazy-initialized)
+        private static Render? _instance;
+        public static Render Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new Render();
+                }
+                return _instance;
+            }
+        }
+
+        private Render()
+        {
+            _currentActionLines = new List<string>();
+
+            // Any of one-time initialization code goes here
+        }
+
         // Store the lines for the *current* action.
-        private static List<string> _currentActionLines = new List<string>();
+        private List<string> _currentActionLines;
 
         // Configuration for the action window.
         private const int actionWindowX = 0;
@@ -22,14 +43,14 @@ namespace Rogue.UI
 
         /// Call this before starting a new action that may produce multiple lines of output.
         /// Clears the buffer (but not the console).
-        public static void StartNewActionMessage()
+        public void StartNewActionMessage()
         {
             _currentActionLines.Clear();
         }
 
         /// Instead of Console.WriteLine, call this to add lines to the current action's messages.
         /// We split on newline in case the string has multiple lines.
-        public static void AddActionLine(string message)
+        public void AddActionLine(string message)
         {
             if (string.IsNullOrEmpty(message))
                 return;
@@ -42,7 +63,7 @@ namespace Rogue.UI
             }
         }
 
-        public static void FinalizeActionMessage()
+        public void FinalizeActionMessage()
         {
             ClearActionWindow();
 
@@ -66,7 +87,7 @@ namespace Rogue.UI
         }
 
         // Clears the rectangular area where action messages go.
-        private static void ClearActionWindow()
+        private void ClearActionWindow()
         {
             for (int y = 0; y < actionWindowHeight; y++)
             {
@@ -77,13 +98,13 @@ namespace Rogue.UI
 
 
 
-        public static void RedrawCell(int row, int col, Room currentRoom)
+        public void RedrawCell(int row, int col, Room currentRoom)
         {
             Console.SetCursorPosition(col, row);
             Console.Write(currentRoom.Grid[row, col].GetDisplayCell());
         }
 
-        public static void RenderSidePanel(Player player, Room currentRoom)
+        public void RenderSidePanel(Player player, Room currentRoom)
         {
             int sidePanelX = 80;
             //int sidePanelY = 0;
@@ -159,12 +180,6 @@ namespace Rogue.UI
                 Console.SetCursorPosition(sidePanelX, ++yPos);
                 Console.WriteLine($" {topItem.GetDisplayName()}");
             }
-
-        }
-
-        public static void NewMsgAction ( )
-        {
-
         }
     }
 }

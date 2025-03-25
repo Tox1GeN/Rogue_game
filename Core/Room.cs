@@ -36,7 +36,12 @@ namespace Rogue.Core
 
             if (!skipGeneration)
             {
-                // TODO: implement geneartion process
+                var builder = new Generation.DefaultDungeonBuilder();
+                var director = new Generation.DungeonDirector(builder);
+                Room build = director.ConstructDefaultDungeon(Rows, Columns);
+
+                Grid = build.Grid;
+                PlayerPosition = build.PlayerPosition;
             }
         }
 

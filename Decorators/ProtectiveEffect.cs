@@ -21,7 +21,7 @@ namespace Rogue.Decorators
         public override void Equip(Player player)
         {
             base.Equip(player);
-            Render.AddActionLine("Armor of this equipment is increased by 3.");
+            Render.Instance.AddActionLine("Armor of this equipment is increased by 3.");
         }
     }
 }

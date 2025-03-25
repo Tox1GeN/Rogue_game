@@ -26,8 +26,8 @@ namespace Rogue.Models
             // Can't store an item in the full inventory
             if (Items.Count == Capacity)
             {
-                Render.AddActionLine($"Your Inventory is Full!");
-                Render.FinalizeActionMessage();
+                Render.Instance.AddActionLine($"Your Inventory is Full!");
+                Render.Instance.FinalizeActionMessage();
                 return false;
             }
             

@@ -13,27 +13,27 @@ namespace Rogue.UI
     {
         public static void PressPickUp(Player player, Room currentRoom)
         {
-            Render.StartNewActionMessage();
+            Render.Instance.StartNewActionMessage();
             if (player.PickupItem(currentRoom))
-                Render.RenderSidePanel(player, currentRoom);
+                Render.Instance.RenderSidePanel(player, currentRoom);
         }
 
         public static void PressDrop(Player player, Room currentRoom)
         {
-            Render.StartNewActionMessage();
+            Render.Instance.StartNewActionMessage();
             if (player.Inventory.Items.Count == 0)
             {
-                Render.AddActionLine("You don't have anything anyway");
-                Render.FinalizeActionMessage();
+                Render.Instance.AddActionLine("You don't have anything anyway");
+                Render.Instance.FinalizeActionMessage();
                 return;
             }
-            Render.AddActionLine("Enter item's id: ");
+            Render.Instance.AddActionLine("Enter item's id: ");
 
-            Render.FinalizeActionMessage();
+            Render.Instance.FinalizeActionMessage();
 
             string? indexInput = Console.ReadLine();
 
-            Render.StartNewActionMessage();
+            Render.Instance.StartNewActionMessage();
 
             if (int.TryParse(indexInput, out int invIndex))
             {
@@ -41,33 +41,33 @@ namespace Rogue.UI
                 Item? item = player.Inventory.ItemAt(invIndex);
                 if (item == null)
                 {
-                    Render.AddActionLine("Nice try. Look into your inventory one more time. Please...");
-                    Render.FinalizeActionMessage();
+                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
+                    Render.Instance.FinalizeActionMessage();
                     return;
                 }
                 else
                 {
                     if (player.DropItem(invIndex, currentRoom))
-                        Render.AddActionLine($"You dropped: {item.GetDisplayName()}");
+                        Render.Instance.AddActionLine($"You dropped: {item.GetDisplayName()}");
                 }
             }
             else
             {
-                Render.AddActionLine("Invalid input. Must be the number.");
+                Render.Instance.AddActionLine("Invalid input. Must be the number.");
             }
 
-            Render.FinalizeActionMessage();
-            Render.RenderSidePanel(player, currentRoom);
+            Render.Instance.FinalizeActionMessage();
+            Render.Instance.RenderSidePanel(player, currentRoom);
         }
 
         public static void PressEquip(Player player, Room currentRoom)
         {
-            Render.StartNewActionMessage();
-            Render.AddActionLine("Enter equipment's id:");
-            Render.FinalizeActionMessage();
+            Render.Instance.StartNewActionMessage();
+            Render.Instance.AddActionLine("Enter equipment's id:");
+            Render.Instance.FinalizeActionMessage();
 
             string? indexInput = Console.ReadLine();
-            Render.StartNewActionMessage();
+            Render.Instance.StartNewActionMessage();
 
             if (int.TryParse(indexInput, out int invIndex))
             {
@@ -75,25 +75,25 @@ namespace Rogue.UI
                 Item? item = player.Inventory.ItemAt(invIndex);
                 if (item == null)
                 {
-                    Render.AddActionLine("Nice try. Look into your inventory one more time. Please...");
-                    Render.FinalizeActionMessage();
+                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
+                    Render.Instance.FinalizeActionMessage();
                     return;
                 }
                 else if (!item.CanEquip)
                 {
-                    Render.AddActionLine("This is unequippable");
-                    Render.FinalizeActionMessage();
+                    Render.Instance.AddActionLine("This is unequippable");
+                    Render.Instance.FinalizeActionMessage();
                     return;
                 }
                 else
                 {
                     if (!item.TwoHanded)
                     {
-                        Render.AddActionLine("Choose hand (0 - L, 1 - R): ");
-                        Render.FinalizeActionMessage();
+                        Render.Instance.AddActionLine("Choose hand (0 - L, 1 - R): ");
+                        Render.Instance.FinalizeActionMessage();
                         string? handInput = Console.ReadLine();
 
-                        Render.StartNewActionMessage();
+                        Render.Instance.StartNewActionMessage();
                         if (int.TryParse(handInput, out int handNumber) && (handNumber == 0 || handNumber == 1))
                         {
                             if (player.Equip(item, handNumber))
@@ -101,7 +101,7 @@ namespace Rogue.UI
                         }
                         else
                         {
-                            Render.AddActionLine("Invalid hand selection. Must be the number 0 or 1");
+                            Render.Instance.AddActionLine("Invalid hand selection. Must be the number 0 or 1");
                         }
                     }
                     else
@@ -114,31 +114,31 @@ namespace Rogue.UI
             }
             else
             {
-                Render.AddActionLine("Invalid input. Must be the number.");
+                Render.Instance.AddActionLine("Invalid input. Must be the number.");
             }
 
-            Render.FinalizeActionMessage();
-            Render.RenderSidePanel(player, currentRoom);
+            Render.Instance.FinalizeActionMessage();
+            Render.Instance.RenderSidePanel(player, currentRoom);
         }
 
         public static void PressUnequip(Player player, Room currentRoom)
         {
-            Render.StartNewActionMessage();
+            Render.Instance.StartNewActionMessage();
             if (player.Hands[0] == null && player.Hands[1] == null)
             {
-                Render.AddActionLine("You have nothing in you hands");
-                Render.FinalizeActionMessage();
+                Render.Instance.AddActionLine("You have nothing in you hands");
+                Render.Instance.FinalizeActionMessage();
                 return;
             }
             else if (player.Hands[0] != null && player.Hands[0]!.TwoHanded)
                 player.Unequip(0, currentRoom);
             else
             {
-                Render.AddActionLine("Choose hand to free (0 - L, 1 - R)");
-                Render.FinalizeActionMessage();
+                Render.Instance.AddActionLine("Choose hand to free (0 - L, 1 - R)");
+                Render.Instance.FinalizeActionMessage();
 
                 string? hand = Console.ReadLine();
-                Render.StartNewActionMessage();
+                Render.Instance.StartNewActionMessage();
 
                 if (int.TryParse(hand, out int handNumber))
                 {
@@ -146,12 +146,12 @@ namespace Rogue.UI
                 }
                 else
                 {
-                    Render.AddActionLine("Invalid input. Must be the number 0 or 1.");
+                    Render.Instance.AddActionLine("Invalid input. Must be the number 0 or 1.");
                 }
             }
 
-            Render.FinalizeActionMessage();
-            Render.RenderSidePanel(player, currentRoom);
+            Render.Instance.FinalizeActionMessage();
+            Render.Instance.RenderSidePanel(player, currentRoom);
         }
     }
 }

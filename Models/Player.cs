@@ -66,9 +66,9 @@ namespace Rogue.Models
             currentRoom.PlayerPosition = (newRow, newCol);
 
 
-            Render.RedrawCell(row, col, currentRoom);
-            Render.RedrawCell(newRow, newCol, currentRoom);
-            Render.RenderSidePanel(this, currentRoom);
+            Render.Instance.RedrawCell(row, col, currentRoom);
+            Render.Instance.RedrawCell(newRow, newCol, currentRoom);
+            Render.Instance.RenderSidePanel(this, currentRoom);
         }
         public bool PickupItem(Room currentRoom)
         {
@@ -84,8 +84,8 @@ namespace Rogue.Models
 
             if (Inventory.AddItem(pickup))
             {
-                Render.AddActionLine($"You've picked up the {pickup.GetDisplayName()}");
-                Render.FinalizeActionMessage();
+                Render.Instance.AddActionLine($"You've picked up the {pickup.GetDisplayName()}");
+                Render.Instance.FinalizeActionMessage();
                 return true;
             }
             else
@@ -113,7 +113,7 @@ namespace Rogue.Models
             {
                 if (Hands[0] != null || Hands[1] != null)
                 {
-                    Render.AddActionLine("It is so proud that it cannot be used with other weapons.");
+                    Render.Instance.AddActionLine("It is so proud that it cannot be used with other weapons.");
                     return false;
                 }
                 else
@@ -127,12 +127,12 @@ namespace Rogue.Models
             {
                 if (Hands[0] != null && Hands[1] != null)
                 {
-                    Render.AddActionLine("Sometimes third arm can be a really good mutation...");
+                    Render.Instance.AddActionLine("Sometimes third arm can be a really good mutation...");
                     return false;
                 }
                 else if (Hands[handNumber] != null)
                 {
-                    Render.AddActionLine("Maybe, try another hand...");
+                    Render.Instance.AddActionLine("Maybe, try another hand...");
                     return false;
                 }                    
                 else
@@ -149,7 +149,7 @@ namespace Rogue.Models
         {
             if (Hands[handNumber] == null)
             {
-                Render.AddActionLine("This hand is already free.");
+                Render.Instance.AddActionLine("This hand is already free.");
                 return false;
             }
 
@@ -178,7 +178,7 @@ namespace Rogue.Models
         {
             if (Inventory.Items.Count == Inventory.Capacity)
             {
-                Render.AddActionLine("Your inventory is full. The item has been dropped on the floor.");
+                Render.Instance.AddActionLine("Your inventory is full. The item has been dropped on the floor.");
 
                 (int row_X, int col_Y) = currentRoom.PlayerPosition;
                 currentRoom.ReceiveDropItem(row_X, col_Y, itemToUnequip);
@@ -186,7 +186,7 @@ namespace Rogue.Models
             else
             {
                 if (Inventory.AddItem(itemToUnequip))
-                    Render.AddActionLine("You've hid it in the bag");
+                    Render.Instance.AddActionLine("You've hid it in the bag");
             }
         }
     }
