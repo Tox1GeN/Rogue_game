@@ -29,7 +29,7 @@ namespace Rogue.Core.Generation
 
             for(int i = 0; i < maxCols; i++)
             {
-                DefaultRoom.Grid[maxRows, i].IsWall = true;
+                DefaultRoom.Grid[maxRows-1, i].IsWall = true;
             }
 
             for (int i = 3; i < maxRows; i++)
@@ -39,7 +39,7 @@ namespace Rogue.Core.Generation
 
             for(int i = 0; i < maxRows; i++)
             {
-                DefaultRoom.Grid[i, maxCols].IsWall = true;
+                DefaultRoom.Grid[i, maxCols-1].IsWall = true;
             }
         }
 
