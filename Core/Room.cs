@@ -15,56 +15,76 @@ namespace Rogue.Core
     public class Room
     {
         // Game field
-        public Cell[,] Grid { get; } = new Cell[20, 40];
+        public Cell[,] Grid { get; private set; } // = new Cell[20, 40];
+        public int Rows { get; }
+        public int Columns { get; }
 
-        // Player's position
+        // Where is the Player?
         public (int row_Y, int col_X) PlayerPosition { get; set; }
-
-        // Initialize the room
-        public Room()
+        public Room (int rows = 20, int cols = 40, bool skipGeneration = false)
         {
-            // each cell in the grid
-            for (int i = 0; i < 20; i++)
+            Rows = rows;
+            Columns = cols;
+            Grid = new Cell[Rows, Columns];
+            for ( int i = 0; i < Rows; i++)
             {
-                for (int j = 0; j < 40; j++)
+                for ( int j = 0; j < Columns; j++)
                 {
                     Grid[i, j] = new Cell();
                 }
             }
 
-            // Generate the Level:
-
-            // Filling the walls:
-            for (int i = 3; i < 40; i++)
+            if (!skipGeneration)
             {
-                Grid[0, i].IsWall = true;
+                // TODO: implement geneartion process
             }
-            for (int i = 0; i < 40; i++)
-            {
-                Grid[19, i].IsWall = true;
-            }
-            for (int i = 0; i < 20; i++)
-            {
-                Grid[i, 39].IsWall = true;
-            }
-            for (int i = 3; i < 20; i++)
-            {
-                Grid[i, 0].IsWall = true;
-            }
-
-            // Put items on the floor:
-            // Sword in the cell [2,10]
-            Sword sword = new Sword("Excalibur", 10);
-
-            Grid[2, 10].Items.Push(new LegendaryEffect(sword));
-
-            // Some gold in the cell [1,1]
-            Grid[1, 1].Items.Push(new Mace("Morning Star", 5));
-
-            // Spawn the Player
-            Grid[0, 0].IsPlayerHere = true;
-            PlayerPosition = (0, 0);
         }
+
+        //// Initialize the room
+        //public DefaultRoom()
+        //{
+        //    // each cell in the grid
+        //    for (int i = 0; i < 20; i++)
+        //    {
+        //        for (int j = 0; j < 40; j++)
+        //        {
+        //            Grid[i, j] = new Cell();
+        //        }
+        //    }
+
+        //    // Generate the Level:
+
+        //    // Filling the walls:
+        //    for (int i = 3; i < 40; i++)
+        //    {
+        //        Grid[0, i].IsWall = true;
+        //    }
+        //    for (int i = 0; i < 40; i++)
+        //    {
+        //        Grid[19, i].IsWall = true;
+        //    }
+        //    for (int i = 0; i < 20; i++)
+        //    {
+        //        Grid[i, 39].IsWall = true;
+        //    }
+        //    for (int i = 3; i < 20; i++)
+        //    {
+        //        Grid[i, 0].IsWall = true;
+        //    }
+
+        //    // Put items on the floor:
+        //    // Sword in the cell [2,10]
+        //    Sword sword = new Sword("Excalibur", 10);
+
+        //    Grid[2, 10].Items.Push(new LegendaryEffect(sword));
+
+        //    // Some gold in the cell [1,1]
+        //    Grid[1, 1].Items.Push(new Mace("Morning Star", 5));
+
+        //    // Spawn the Player
+        //    Grid[0, 0].IsPlayerHere = true;
+        //    PlayerPosition = (0, 0);
+        //}
 
         // Render the room 
         // TODO: change the render logic line by line, not char by char to make it faster and smother
