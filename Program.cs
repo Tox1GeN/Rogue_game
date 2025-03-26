@@ -25,6 +25,7 @@ namespace Rogue
             currentRoom.Render();
 
             Render.Instance.RenderSidePanel(player, currentRoom);
+            Render.Instance.RenderMonsterPanel(player, currentRoom);
 
             var instrBuilder = new InstructionBuilder();
             instrBuilder.BuildInstructions(currentRoom, player).Display();

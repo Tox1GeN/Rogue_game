@@ -93,18 +93,21 @@ namespace Rogue.Core
         //    PlayerPosition = (0, 0);
         //}
 
-        // Render the room 
-        // TODO: change the render logic line by line, not char by char to make it faster and smother
+        // Render the room
         public void Render()
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < Rows; i++)
             {
-                for (int j = 0; j < 40; j++)
+                for (int j = 0; j < Columns; j++)
                 {
-                    Console.Write(Grid[i, j].GetDisplayCell());
+                    var (symbol, color) = Grid[i, j].GetDisplayCell();
+                    Console.ForegroundColor = color;
+                    Console.Write(symbol);
+                    Console.ResetColor();
+                    // Reset so subsequent cells don’t inherit the color
                 }
                 Console.WriteLine();
-            }            
+            }
         }
 
         public Item? RemoveTopItemAt(int row_Y, int col_X)

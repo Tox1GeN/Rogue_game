@@ -21,18 +21,25 @@ namespace Rogue.Core
         public Rogue.Models.Enemy? Enemy { get; set; }
 
         // Get character of the current cell for a rendering
-        public char GetDisplayCell()
+        public (char symbol, ConsoleColor color) GetDisplayCell()
         {
             if (IsPlayerHere)
-                return '¶';
+                return ('¶', ConsoleColor.White);
+
             if (IsWall)
-                return '█';
+                return ('█', ConsoleColor.DarkGray);
+
             if (Items.Count > 0)
-                return '*';
+                if (Items.Peek().CanEquip)
+                    return (Items.Peek().GetDisplayName()[0], ConsoleColor.Cyan);
+                else
+                    return ('I', ConsoleColor.Yellow);
             if (Enemy != null)
-                return Enemy.ToString()[0];
-            // Otherwise it is an empty cell
-            return ' ';
+                // First letter of the enemy’s name, colored red
+                return (Enemy.Name[0], ConsoleColor.Red);
+
+            // Otherwise an empty floor
+            return (' ', ConsoleColor.Black);
         }
     }
 }

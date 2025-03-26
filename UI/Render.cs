@@ -38,7 +38,7 @@ namespace Rogue.UI
         // Configuration for the action window.
         private const int actionWindowX = 0;
         private const int actionWindowY = 21;  // e.g., below a 20-row game grid
-        private const int actionWindowWidth = 80;
+        private const int actionWindowWidth = 100;
         private const int actionWindowHeight = 10;
 
         /// Call this before starting a new action that may produce multiple lines of output.
@@ -101,12 +101,15 @@ namespace Rogue.UI
         public void RedrawCell(int row, int col, Room currentRoom)
         {
             Console.SetCursorPosition(col, row);
-            Console.Write(currentRoom.Grid[row, col].GetDisplayCell());
+            var (symbol, color) = currentRoom.Grid[row, col].GetDisplayCell();
+            Console.ForegroundColor = color;
+            Console.Write(symbol);
+            Console.ResetColor();
         }
 
         public void RenderSidePanel(Player player, Room currentRoom)
         {
-            int sidePanelX = 45;
+            int sidePanelX = 50;
             //int sidePanelY = 0;
 
             for(int i = 0; i < 25; i++)
@@ -185,7 +188,7 @@ namespace Rogue.UI
         public void RenderInstructions(IEnumerable<string> lines)
         {
             int instrX = 80;        // Where to start printing instructions
-            int instrY = 10;        // Which row to start printing
+            int instrY = 0;        // Which row to start printing
             int instrPanelWidth = 40;  // Width of the instruction panel
             int instrHeight = 5;    // Number of lines reserved for instructions
 
@@ -217,11 +220,15 @@ namespace Rogue.UI
         public void RenderMonsterPanel(Player player, Room currentRoom)
         {
             int monsterPanelX = 80;    // starting column for monster panel (adjusted for layout)
+            int monsterPanelY = 6;
             int panelWidth = 25;       // width of the monster panel
             int panelHeight = 25;      // number of lines to clear (covering rows 0-24)
 
+            Console.SetCursorPosition(monsterPanelX, monsterPanelY);
+            Console.Write("Nearby Monsters:");
+
             // 1. Clear the monster panel area
-            for (int y = 0; y < panelHeight; y++)
+            for (int y = ++monsterPanelY; y < panelHeight; y++)
             {
                 Console.SetCursorPosition(monsterPanelX, y);
                 Console.Write(new string(' ', panelWidth));
@@ -254,9 +261,7 @@ namespace Rogue.UI
             }
 
             // 3. Print header and each enemy's info
-            Console.SetCursorPosition(monsterPanelX, 0);
-            Console.Write("Nearby Monsters:");
-            int line = 1;
+            int line = ++monsterPanelY;
             foreach (var enemy in nearbyEnemies)
             {
                 if (line >= panelHeight) break;  // safety check to avoid overflow
