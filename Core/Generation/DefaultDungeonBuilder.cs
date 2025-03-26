@@ -9,48 +9,96 @@ namespace Rogue.Core.Generation
     public class DefaultDungeonBuilder : IDungeonBuilder
     {
         private Room? _room;
-        private Room DefaultRoom => _room ?? throw new InvalidOperationException("Room is not initialized.");
+        private Room BuildingRoom => _room ?? throw new InvalidOperationException("Room is not initialized.");
 
+        private Random _rng = new Random();
         public void InitGrid(int rows, int cols)
         {
             _room = new Room(rows, cols, skipGeneration: true);
         }
 
-        public void BuildWalls()
+        public void EmptyDungeon()
         {
-
-            int maxRows = DefaultRoom.Rows;
-            int maxCols = DefaultRoom.Columns;
-
-            for (int i = 3; i < maxCols; i++)
+            for (int i = 0; i < BuildingRoom.Rows; i++)
             {
-                DefaultRoom.Grid[0, i].IsWall = true;
-            }
-
-            for(int i = 0; i < maxCols; i++)
-            {
-                DefaultRoom.Grid[maxRows-1, i].IsWall = true;
-            }
-
-            for (int i = 3; i < maxRows; i++)
-            {
-                DefaultRoom.Grid[i, 0].IsWall = true;
-            }
-
-            for(int i = 0; i < maxRows; i++)
-            {
-                DefaultRoom.Grid[i, maxCols-1].IsWall = true;
+                for ( int j = 0; j < BuildingRoom.Columns; j++)
+                {
+                    BuildingRoom.Grid[i, j].IsWall = false;
+                }
             }
         }
 
-        public void AddPath()
+        public void FilledDungeon()
         {
-            // No need for an implementation for Default Level.
+            for (int i = 0; i < BuildingRoom.Rows; i++)
+            {
+                for (int j = 0; j < BuildingRoom.Columns; j++)
+                {
+                    BuildingRoom.Grid[i, j].IsWall = true;
+                }
+            }
         }
-            
+
+        // --- Additional Strategies ---
+        public void AddPaths()
+        {
+            // Assume the dungeon is filled. Carve a path using a simple random walk.
+            int currentRow = _rng.Next(1, BuildingRoom.Rows - 1);
+            int currentCol = _rng.Next(1, BuildingRoom.Columns - 1);
+            int steps = (BuildingRoom.Rows * BuildingRoom.Columns) / 4;  // arbitrary step count
+
+            for (int step = 0; step < steps; step++)
+            {
+                BuildingRoom.Grid[currentRow, currentCol].IsWall = false;
+                // Randomly decide a direction: up, down, left, right
+                int dir = _rng.Next(4);
+                switch (dir)
+                {
+                    case 0: if (currentRow > 1) currentRow--; break; // up
+                    case 1: if (currentRow < BuildingRoom.Rows - 2) currentRow++; break; // down
+                    case 2: if (currentCol > 1) currentCol--; break; // left
+                    case 3: if (currentCol < BuildingRoom.Columns - 2) currentCol++; break; // right
+                }
+            }
+        }
+
+        public void AddChambers()
+        {
+            // Carve out several random rectangular chambers (like holes in a cheese)
+            int chamberCount = 3;  // arbitrary number of chambers
+            for (int c = 0; c < chamberCount; c++)
+            {
+                // Random top-left position ensuring the chamber fits
+                int chamberWidth = _rng.Next(3, 8);
+                int chamberHeight = _rng.Next(3, 6);
+                int row = _rng.Next(1, BuildingRoom.Rows - chamberHeight - 1);
+                int col = _rng.Next(1, BuildingRoom.Columns - chamberWidth - 1);
+
+                for (int i = row; i < row + chamberHeight; i++)
+                {
+                    for (int j = col; j < col + chamberWidth; j++)
+                    {
+                        BuildingRoom.Grid[i, j].IsWall = false;
+                    }
+                }
+            }
+        }
+
         public void AddCentralRoom()
         {
-            // No need for an implementation for Default Level.
+            // Carve a large room in the center
+            int roomHeight = BuildingRoom.Rows / 2;
+            int roomWidth = BuildingRoom.Columns / 2;
+            int startRow = (BuildingRoom.Rows - roomHeight) / 2;
+            int startCol = (BuildingRoom.Columns - roomWidth) / 2;
+
+            for (int i = startRow; i < startRow + roomHeight; i++)
+            {
+                for (int j = startCol; j < startCol + roomWidth; j++)
+                {
+                    BuildingRoom.Grid[i, j].IsWall = false;
+                }
+            }
         }
 
         public void AddItems()
@@ -58,7 +106,7 @@ namespace Rogue.Core.Generation
 
             var note = new Rogue.Models.UnusableItems.MysteriousNote("Strange Note", "A old piece of paper that I found after I've woke up", "This is a note. It says: 'You are the chosen one.'");
 
-            DefaultRoom.Grid[5, 5].Items.Push(note);
+            BuildingRoom.Grid[14, 17].Items.Push(note);
         }
 
         public void AddWeapons()
@@ -66,17 +114,17 @@ namespace Rogue.Core.Generation
 
             var sword = new Rogue.Models.Weapons.Sword("Excalibur", damage: 10);
 
-            DefaultRoom.Grid[2, 10].Items.Push(new Rogue.Decorators.LegendaryEffect(sword));
+            BuildingRoom.Grid[12, 13].Items.Push(new Rogue.Decorators.LegendaryEffect(sword));
         }
 
 
-        public void PlacePlayer()
+        public void PlacePlayer(int x, int y)
         {
-
-            DefaultRoom.PlayerPosition = (0, 0);
-            DefaultRoom.Grid[0, 0].IsPlayerHere = true;
+            BuildingRoom.Grid[y, x].IsWall = false;
+            BuildingRoom.PlayerPosition = (y, x);
+            BuildingRoom.Grid[y, x].IsPlayerHere = true;
         }
 
-        public Room GetResult() => DefaultRoom;
+        public Room GetResult() => BuildingRoom;
     }
 }

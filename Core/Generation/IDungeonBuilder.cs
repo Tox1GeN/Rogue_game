@@ -9,11 +9,14 @@ namespace Rogue.Core.Generation
     public interface IDungeonBuilder
     {
         void InitGrid(int rows, int cols);
-        void BuildWalls();
+        void EmptyDungeon();
+        void FilledDungeon();
+        void AddChambers();
+        void AddPaths();
         void AddCentralRoom();
         void AddItems();
         void AddWeapons();
-        void PlacePlayer();
+        void PlacePlayer(int x, int y);
         Room GetResult();       
     }
 }

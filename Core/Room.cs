@@ -46,7 +46,7 @@ namespace Rogue.Core
         }
 
         //// Initialize the room
-        //public DefaultRoom()
+        //public BuildingRoom()
         //{
         //    // each cell in the grid
         //    for (int i = 0; i < 20; i++)
