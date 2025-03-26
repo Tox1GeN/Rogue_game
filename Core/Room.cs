@@ -38,10 +38,12 @@ namespace Rogue.Core
             {
                 var builder = new Generation.DefaultDungeonBuilder();
                 var director = new Generation.DungeonDirector(builder);
-                Room build = director.ConstructDefaultDungeon(Rows, Columns);
+                //Room firstLevel = director.ConstructFirstLevelDungeon(Rows, Columns);
+                //Room secondLevel = director.ConstructSecondLevelDungeon(Rows, Columns);
+                Room thirdLevel = director.ConstructThirdLevelDungeon(Rows, Columns);
 
-                Grid = build.Grid;
-                PlayerPosition = build.PlayerPosition;
+                Grid = thirdLevel.Grid;
+                PlayerPosition = thirdLevel.PlayerPosition;
             }
         }
 

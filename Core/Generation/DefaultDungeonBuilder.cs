@@ -42,30 +42,64 @@ namespace Rogue.Core.Generation
         // --- Additional Strategies ---
         public void AddPaths()
         {
-            // Assume the dungeon is filled. Carve a path using a simple random walk.
+            // Start at a random interior position
             int currentRow = _rng.Next(1, BuildingRoom.Rows - 1);
             int currentCol = _rng.Next(1, BuildingRoom.Columns - 1);
-            int steps = (BuildingRoom.Rows * BuildingRoom.Columns) / 4;  // arbitrary step count
+            int totalSteps = (BuildingRoom.Rows * BuildingRoom.Columns);  // total carving steps (adjustable)
+            int[] dRow = { -1, 1, 0, 0 };  // direction vectors (up, down, left, right)
+            int[] dCol = { 0, 0, -1, 1 };
 
-            for (int step = 0; step < steps; step++)
+            // Choose an initial random direction
+            int currentDir = _rng.Next(4);
+
+            for (int step = 0; step < totalSteps; step++)
             {
-                BuildingRoom.Grid[currentRow, currentCol].IsWall = false;
-                // Randomly decide a direction: up, down, left, right
-                int dir = _rng.Next(4);
-                switch (dir)
+                BuildingRoom.Grid[currentRow, currentCol].IsWall = false;  // carve out current cell
+
+                // Decide whether to turn or continue straight
+                if (_rng.NextDouble() < 0.3)
                 {
-                    case 0: if (currentRow > 1) currentRow--; break; // up
-                    case 1: if (currentRow < BuildingRoom.Rows - 2) currentRow++; break; // down
-                    case 2: if (currentCol > 1) currentCol--; break; // left
-                    case 3: if (currentCol < BuildingRoom.Columns - 2) currentCol++; break; // right
+                    // 30% chance to turn (pick a new direction not directly back on itself)
+                    int newDir;
+                    do
+                    {
+                        newDir = _rng.Next(4);
+                    } while ((currentDir == 0 && newDir == 1) ||
+                             (currentDir == 1 && newDir == 0) ||
+                             (currentDir == 2 && newDir == 3) ||
+                             (currentDir == 3 && newDir == 2));
+                    currentDir = newDir;
                 }
+
+                // Compute next cell in the chosen direction
+                int nextRow = currentRow + dRow[currentDir];
+                int nextCol = currentCol + dCol[currentDir];
+
+                // If next cell is out of bounds or would hit the border, choose a different direction
+                if (nextRow < 1 || nextRow >= BuildingRoom.Rows - 1 ||
+                    nextCol < 1 || nextCol >= BuildingRoom.Columns - 1)
+                {
+                    continue; // skip this step (or optionally pick a different direction)
+                }
+                // If next cell is already carved open and we risk creating a wide open area, 
+                // randomly decide to turn to avoid widening the corridor
+                if (!BuildingRoom.Grid[nextRow, nextCol].IsWall && _rng.NextDouble() < 0.8)
+                {
+                    // 80% chance to turn away from carving an already open cell (preserve narrow tunnel)
+                    currentDir = _rng.Next(4);
+                    continue;
+                }
+
+                // Move into the next cell
+                currentRow = nextRow;
+                currentCol = nextCol;
             }
         }
 
         public void AddChambers()
         {
             // Carve out several random rectangular chambers (like holes in a cheese)
-            int chamberCount = 3;  // arbitrary number of chambers
+            int chamberCount = 6;  // arbitrary number of chambers
             for (int c = 0; c < chamberCount; c++)
             {
                 // Random top-left position ensuring the chamber fits
@@ -101,28 +135,84 @@ namespace Rogue.Core.Generation
             }
         }
 
+        private void PlaceObjectsRandomly<T>(int count, Func<T> createFunc, Action<Cell, T> placeAction) where T : Models.Item
+        {
+            int placed = 0;
+            // Avoid infinite loops by limiting attempts.
+            int attemps = 0;
+            while (placed < count && attemps < 1000)
+            {
+                int r = _rng.Next(0, BuildingRoom.Rows);
+                int c = _rng.Next(0, BuildingRoom.Columns);
+                if (!BuildingRoom.Grid[r, c].IsWall && BuildingRoom.Grid[r, c].Enemy == null)
+                {
+                    placeAction(BuildingRoom.Grid[r, c], createFunc());
+                    placed++;
+                }
+                attemps++;
+            }
+        }
+
         public void AddItems()
         {
-
-            var note = new Rogue.Models.UnusableItems.MysteriousNote("Strange Note", "A old piece of paper that I found after I've woke up", "This is a note. It says: 'You are the chosen one.'");
-
-            BuildingRoom.Grid[14, 17].Items.Push(note);
+            PlaceObjectsRandomly(1,
+                () => new Rogue.Models.UnusableItems.MysteriousNote(
+                    "Strange note",
+                    "It looks like a joke",
+                    "You are the chosen one"),
+                (cell, item) => cell.Items.Push(item));
+            PlaceObjectsRandomly(2,
+                () => new Rogue.Models.UsableItems.Potion("Little Health Potion", 10),
+                (cell, item) => cell.Items.Push(item));
         }
 
         public void AddWeapons()
         {
+            PlaceObjectsRandomly(1,
+                () => new Rogue.Models.Weapons.Sword("Wooden Sword", 2),
+                (cell, item) => cell.Items.Push(item));
+        }
 
-            var sword = new Rogue.Models.Weapons.Sword("Excalibur", damage: 10);
-
-            BuildingRoom.Grid[12, 13].Items.Push(new Rogue.Decorators.LegendaryEffect(sword));
+        public void AddEnemies()
+        {
+            // Let's say we want to spawn 3 enemies.
+            int enemyCount = 3;
+            int attempts = 0;
+            // Avoid infinite loops by limiting attempts.
+            while (enemyCount > 0 && attempts < 1000)
+            {
+                int r = _rng.Next(0, BuildingRoom.Rows);
+                int c = _rng.Next(0, BuildingRoom.Columns);
+                var cell = BuildingRoom.Grid[r, c];
+                // Check if cell is truly empty.
+                if (!cell.IsWall && cell.Items.Count == 0 && !cell.IsPlayerHere && cell.Enemy == null)
+                {
+                    cell.Enemy = new Rogue.Models.Enemy("Skeleton", health: 6, attackPower: 3);
+                    enemyCount--;
+                }
+                attempts++;
+            }
         }
 
 
-        public void PlacePlayer(int x, int y)
+        public void AddModifiedWeapons()
         {
-            BuildingRoom.Grid[y, x].IsWall = false;
-            BuildingRoom.PlayerPosition = (y, x);
-            BuildingRoom.Grid[y, x].IsPlayerHere = true;
+            // Example: add 2 weapons with a modifier.
+            PlaceObjectsRandomly(1,
+                () =>
+                {
+                    // Wrap a sword with a powerful effect as an example.
+                    var sword = new Rogue.Models.Weapons.Sword("Saber", 3);
+                    return new Rogue.Decorators.PowerfulEffect(sword);
+                },
+                (cell, item) => cell.Items.Push(item));
+        }
+
+        public void PlacePlayer(int row, int col)
+        {
+            BuildingRoom.Grid[row, col].IsWall = false;
+            BuildingRoom.PlayerPosition = (row, col);
+            BuildingRoom.Grid[row, col].IsPlayerHere = true;
         }
 
         public Room GetResult() => BuildingRoom;

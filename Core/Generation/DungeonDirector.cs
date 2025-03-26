@@ -16,39 +16,41 @@ namespace Rogue.Core.Generation
         }
 
         // First Level ???
-        public Room ConstructDefaultDungeon(int rows = 20, int cols = 40)
+        public Room ConstructFirstLevelDungeon(int rows = 20, int cols = 40)
         {
             _builder.InitGrid(rows, cols);
             _builder.FilledDungeon();
-            _builder.AddPaths();
-            _builder.AddChambers();
-            //_builder.AddCentralRoom();
+            _builder.AddCentralRoom();
             _builder.AddItems();
-            _builder.AddWeapons();
-            _builder.PlacePlayer(6, 4);
+            _builder.PlacePlayer(17, 15);
             EnsureConectivity();
             return _builder.GetResult();
         }
 
-        // Test (Empty Dungeon)
+        public Room ConstructSecondLevelDungeon(int rows = 20, int cols = 40)
+        {
+            _builder.InitGrid(rows, cols);
+            _builder.FilledDungeon();
+            _builder.AddPaths();
+            _builder.AddItems();
+            _builder.AddWeapons();
+            _builder.PlacePlayer(3, 4);
+            EnsureConectivity();
+            return _builder.GetResult();
+        }
 
-        //public Room ConstructEmptyDungeon(int rows = 20, int cols = 40)
-        //{
-        //    _builder.InitGrid(rows, cols);
-        //    _builder.PlacePlayer();
-        //    return _builder.GetResult();
-        //}
-
-        //public Room ConstructDungeonWithRoomsAndPaths(int rows = 20, int cols = 40)
-        //{
-        //    _builder.InitGrid(rows, cols);
-        //    _builder.BuildWalls();
-        //    _builder.AddCentralRoom();
-        //    _builder.AddItems();
-        //    _builder.AddWeapons();
-        //    _builder.PlacePlayer();
-        //    return _builder.GetResult();
-        //}
+        public Room ConstructThirdLevelDungeon(int rows = 20, int cols = 40)
+        {
+            _builder.InitGrid(rows, cols);
+            _builder.FilledDungeon();
+            _builder.PlacePlayer(3, 4);
+            _builder.AddPaths();
+            _builder.AddItems();
+            _builder.AddModifiedWeapons();
+            _builder.AddEnemies();
+            EnsureConectivity();
+            return _builder.GetResult();
+        }
 
         public void EnsureConectivity()
         {
@@ -74,7 +76,7 @@ namespace Rogue.Core.Generation
                     }
                 }
             }
-            if (emptyCells.Count == 0)
+            if (emptyCells.Count == 0 || emptyCells.Count == 1)
             {
                 return;
             }
@@ -86,7 +88,7 @@ namespace Rogue.Core.Generation
 
             int correctCellIndex = 0;
 
-            for(int i = 0; i < emptyCells.Count; i++)
+            for (int i = 0; i < emptyCells.Count; i++)
             {
                 if (!IsSingleIsolatedCell(emptyCells[i].Item1, emptyCells[i].Item2, checkingRoom))
                 {
@@ -95,9 +97,8 @@ namespace Rogue.Core.Generation
                 }
             }
 
-
             // 2. From the first empty cell use BFS to find all the empty cells that are reachable
-            HashSet<(int, int)> visited = BFS(checkingRoom, emptyCells[correctCellIndex]);
+            HashSet<(int, int)> visited = BFS(checkingRoom, emptyCells[0]);
 
             // 3. In foreach loop we check if the empty cell is in the visited set
             foreach (var (r, c) in emptyCells)
@@ -107,22 +108,12 @@ namespace Rogue.Core.Generation
                     // 4. Create a path from the nearest visited cell to current unvisited cell
                     var (vr, vc) = FindNearestVisited(r, c, checkingRoom.Rows, checkingRoom.Columns, visited);
 
-                    //
-                    if ((vr, vc) == (r, c))
-                    {
-                        Console.WriteLine("Error: There is only one empty cell");
-                        return;
-                    }
-
                     CarveCorridor(checkingRoom, (r, c), (vr, vc));
-
 
                     // Update visited set
                     visited = BFS(checkingRoom, emptyCells[0]);
                 }
             }
-
-
         }
 
         private HashSet<(int, int)> BFS(Room room, (int, int) start)

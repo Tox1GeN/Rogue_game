@@ -16,6 +16,8 @@ namespace Rogue.Core.Generation
         void AddCentralRoom();
         void AddItems();
         void AddWeapons();
+        void AddModifiedWeapons();
+        void AddEnemies();
         void PlacePlayer(int x, int y);
         Room GetResult();       
     }

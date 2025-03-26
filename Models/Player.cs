@@ -69,6 +69,7 @@ namespace Rogue.Models
             Render.Instance.RedrawCell(row, col, currentRoom);
             Render.Instance.RedrawCell(newRow, newCol, currentRoom);
             Render.Instance.RenderSidePanel(this, currentRoom);
+            Render.Instance.RenderMonsterPanel(this, currentRoom);
         }
         public bool PickupItem(Room currentRoom)
         {

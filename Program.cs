@@ -1,4 +1,5 @@
 ﻿using Rogue.Core;
+using Rogue.Core.Generation;
 using Rogue.Models;
 using Rogue.Models.Weapons;
 using Rogue.UI;
@@ -10,6 +11,10 @@ namespace Rogue
     {
         static void Main(string[] args)
         {
+            Console.SetWindowSize(120, 40);
+            Console.SetBufferSize(120, 40);
+
+
             // Turn of blinking cursor for a cleaner UI
             Console.CursorVisible = false;
 
@@ -21,13 +26,17 @@ namespace Rogue
 
             Render.Instance.RenderSidePanel(player, currentRoom);
 
+            var instrBuilder = new InstructionBuilder();
+            instrBuilder.BuildInstructions(currentRoom, player).Display();
+
             while (true)
             {
                 // Read user input without displaying it.
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
                 // Store player's current position before moving.
-                var (oldRow, oldCol) = currentRoom.PlayerPosition;
+                var (oldRow, oldCol) = currentRoom.PlayerPosition;               
+                
 
                 // Process movement keys (W, A, S, D) and other actions.
                 switch (keyInfo.Key)
@@ -59,7 +68,7 @@ namespace Rogue
                     default:
                         break;
                 }
-
+                instrBuilder.BuildInstructions(currentRoom, player).Display();
             }
         }
     }
