@@ -153,5 +153,53 @@ namespace Rogue.UI
             Render.Instance.FinalizeActionMessage();
             Render.Instance.RenderSidePanel(player, currentRoom);
         }
+
+        public static void PressUse(Player player, Room currentRoom)
+        {
+
+
+            Render.Instance.StartNewActionMessage();
+            if (player.Inventory.Items.Count == 0)
+            {
+                Render.Instance.AddActionLine("You don't have anything anyway");
+                Render.Instance.FinalizeActionMessage();
+                return;
+            }
+            Render.Instance.AddActionLine("Enter item's id: ");
+            Render.Instance.FinalizeActionMessage();
+
+            string? indexInput = Console.ReadLine();
+
+            Render.Instance.StartNewActionMessage();
+
+            if (int.TryParse(indexInput, out int invIndex))
+            {
+                // Get the item from the inventory
+                Item? item = player.Inventory.ItemAt(invIndex);
+                if (item == null)
+                {
+                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
+                    Render.Instance.FinalizeActionMessage();
+                    return;
+                }
+                else if (!item.CanUse)
+                {
+                    Render.Instance.AddActionLine("This is unusable");
+                    Render.Instance.FinalizeActionMessage();
+                    return;
+                }
+                else
+                {
+                    player.UseItem(item, invIndex);
+                }
+            }
+            else
+            {
+                Render.Instance.AddActionLine("Invalid input. Must be the number.");
+            }
+
+            Render.Instance.FinalizeActionMessage();
+            Render.Instance.RenderSidePanel(player, currentRoom);
+        }
     }
 }

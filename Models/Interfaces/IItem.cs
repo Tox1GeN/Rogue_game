@@ -12,9 +12,11 @@ namespace Rogue.Models.Interfaces
         string Name { get; }
         string GetDisplayName();
         bool CanEquip { get; }
+        bool CanUse { get; }
         bool TwoHanded { get; }
         void Equip(Player player) { }
         void Unequip(Player player) { }
         void PickUp(Player playerm, Room currentRoom) { }
+        void Use(Player player) { }
     }
 }

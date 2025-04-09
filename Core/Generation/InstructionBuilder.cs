@@ -5,67 +5,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Core.Generation.Interfaces;
 
 namespace Rogue.Core.Generation
 {
-    public class InstructionBuilder
+    public class InstructionBuilder : IBuilder
     {
-        private List<string> _instructions = new List<string>();
+        private readonly List<string> _instructions = new List<string>();
+        private BuildResult _result = new BuildResult();
 
-        public InstructionBuilder BuildInstructions(Room room, Player player)
+        public IBuilder InitGrid(int rows, int cols) { return this; }
+        public IBuilder EmptyDungeon() { return this; }
+        public IBuilder FilledDungeon() { return this; }
+        public IBuilder AddChambers() { return this; }
+        public IBuilder AddPaths() { return this; }
+        public IBuilder AddCentralRoom() { return this; }
+
+        public IBuilder AddItems()
         {
-            _instructions.Clear();
-
-            // Movement controls
-            _instructions.Add("Use W/A/S/D to to move.");
-
-            // If any cell has items, add instruction for pickup.
-            bool hasItemsOnGround = false;
-            for (int i = 0; i < room.Rows && !hasItemsOnGround; i++)
-            {
-                for (int j = 0; j < room.Columns; j++)
-                {
-                    if (room.Grid[i, j].Items.Count > 0)
-                    {
-                        hasItemsOnGround = true;
-                        break;
-                    }
-                }
-            }
-
-            // Pickup control
-            if (hasItemsOnGround)
+            if (!_instructions.Contains("Press E to pick up items."))
                 _instructions.Add("Press E to pick up items.");
-
-            // Droping control
-            if (player.Inventory.Items.Count > 0)
-            {
-                _instructions.Add("Press G to drop an item.");
-            }
-
-            // Equiping control
-            bool anyEquipable = player.Inventory.Items.Any(item => item.CanEquip);
-            if(anyEquipable)
-            {
-                _instructions.Add("Press F to equip an item from invetory.");
-            }
-
-            // 5. Unequipping items (if player has something in hands)
-            if (player.Hands[0] != null || player.Hands[1] != null)
-            {
-                _instructions.Add("Press U to unequip currently held item.");
-            }
-
-
-            // Stage 3 ???
-            // combat ???
-
             return this;
         }
 
-        public void Display()
+        public IBuilder AddWeapons()
         {
-            Render.Instance.RenderInstructions(_instructions);
+            if (!_instructions.Contains("Press G to drop an item."))
+                _instructions.Add("Press G to drop an item.");
+            if (!_instructions.Contains("Press F to equip an item from inventory."))
+                _instructions.Add("Press F to equip an item from inventory.");
+            if (!_instructions.Contains("Press U to unequip held items."))
+                _instructions.Add("Press U to unequip held items.");
+            return this;
+        }
+
+        public IBuilder AddPotions()
+        {
+            if (!_instructions.Contains("Press E to pick up items."))
+                _instructions.Add("Press E to pick up items.");
+            if (!_instructions.Contains("Press P to use potions."))
+                _instructions.Add("Press P to use potions.");
+            return this;
+        }
+
+        public IBuilder AddEnemies() { return this; }
+        public IBuilder PlacePlayer(int x, int y) { return this; }
+
+        public IBuilder EnsureConnectivity()
+        {
+            return this;
+        }
+
+        public IBuilder AddMovement()
+        {
+            // No movement handler needed in instructions.
+            return this;
+        }
+
+        public BuildResult GetResult()
+        {
+            _result.Instructions.AddRange(_instructions);
+            return _result;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models.Interfaces;
 
 namespace Rogue.Models
 {
@@ -18,6 +19,10 @@ namespace Rogue.Models
         public int Luck { get; set; }
         public int Aggression { get; set; }
         public int Wisdom { get; set; }
+
+        // Player's buffs or negative effects (observers)
+        private List<IEffect> activeEffects = new List<IEffect>();
+        public IReadOnlyList<IEffect> GetActiveEffects() => activeEffects.AsReadOnly();
 
         // Player has inventory
         public Inventory Inventory { get; set; }
@@ -35,13 +40,41 @@ namespace Rogue.Models
             Strength = 1;
             Dexterity = 1;
             Health = 10;
-            Luck = 0;
+            Luck = 1;
             Aggression = 0;
             Wisdom = 0;
             Inventory = new Inventory();
             Coins = new Coin(0);
             GoldValue = new Gold(0);
             Hands = new Item?[2]; // index 0: left hand, index 1: right hand
+        }
+
+        // Attach and Detach observers
+
+        public void AttachEffect(IEffect effect)
+        {
+            activeEffects.Add(effect);
+        }
+
+        public void DetachEffect(IEffect effect)
+        {
+            activeEffects.Remove(effect);
+        }
+
+        // Notifier of updates
+
+        public void UpdateEffectsPerTurn()
+        {
+            if (activeEffects.Count == 0)
+                return;
+
+            var currentEffects = new List<IEffect>(activeEffects);
+            foreach (IEffect effect in currentEffects)
+            {
+                effect.OnTurnPassed(this);
+            }
+
+            activeEffects.RemoveAll(e => e.IsExpired);
         }
 
         // Player Actions
@@ -174,7 +207,6 @@ namespace Rogue.Models
 
             return true;
         }
-
         private void HandleUnequipItem(Item itemToUnequip, Room currentRoom)
         {
             if (Inventory.Items.Count == Inventory.Capacity)
@@ -189,6 +221,15 @@ namespace Rogue.Models
                 if (Inventory.AddItem(itemToUnequip))
                     Render.Instance.AddActionLine("You've hid it in the bag");
             }
+        }
+
+        public void UseItem(Item item, int invIndex)
+        {
+            item.Use(this);
+            Inventory.RemoveItemAt(invIndex);
+
+            Render.Instance.AddActionLine($"You used: {item.GetDisplayName()}");
+            // [short remark]: option to put this line in the StrengthPotion, LuckPotion, etc. classes (in the Use() method)
         }
     }
 }

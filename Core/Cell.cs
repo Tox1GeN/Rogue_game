@@ -32,6 +32,8 @@ namespace Rogue.Core
             if (Items.Count > 0)
                 if (Items.Peek().CanEquip)
                     return (Items.Peek().GetDisplayName()[0], ConsoleColor.Cyan);
+                else if (Items.Peek().CanUse)
+                    return (Items.Peek().GetDisplayName()[0], ConsoleColor.Magenta);
                 else
                     return ('I', ConsoleColor.Yellow);
             if (Enemy != null)

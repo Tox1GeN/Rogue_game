@@ -21,7 +21,7 @@ namespace Rogue.Core
 
         // Where is the Player?
         public (int row_Y, int col_X) PlayerPosition { get; set; }
-        public Room (int rows = 20, int cols = 40, bool skipGeneration = false)
+        public Room (int rows = 20, int cols = 40, bool skipGeneration = true)
         {
             Rows = rows;
             Columns = cols;
@@ -33,65 +33,7 @@ namespace Rogue.Core
                     Grid[i, j] = new Cell();
                 }
             }
-
-            if (!skipGeneration)
-            {
-                var builder = new Generation.DefaultDungeonBuilder();
-                var director = new Generation.DungeonDirector(builder);
-                //Room firstLevel = director.ConstructFirstLevelDungeon(Rows, Columns);
-                //Room secondLevel = director.ConstructSecondLevelDungeon(Rows, Columns);
-                Room thirdLevel = director.ConstructThirdLevelDungeon(Rows, Columns);
-
-                Grid = thirdLevel.Grid;
-                PlayerPosition = thirdLevel.PlayerPosition;
-            }
         }
-
-        //// Initialize the room
-        //public BuildingRoom()
-        //{
-        //    // each cell in the grid
-        //    for (int i = 0; i < 20; i++)
-        //    {
-        //        for (int j = 0; j < 40; j++)
-        //        {
-        //            Grid[i, j] = new Cell();
-        //        }
-        //    }
-
-        //    // Generate the Level:
-
-        //    // Filling the walls:
-        //    for (int i = 3; i < 40; i++)
-        //    {
-        //        Grid[0, i].IsWall = true;
-        //    }
-        //    for (int i = 0; i < 40; i++)
-        //    {
-        //        Grid[19, i].IsWall = true;
-        //    }
-        //    for (int i = 0; i < 20; i++)
-        //    {
-        //        Grid[i, 39].IsWall = true;
-        //    }
-        //    for (int i = 3; i < 20; i++)
-        //    {
-        //        Grid[i, 0].IsWall = true;
-        //    }
-
-        //    // Put items on the floor:
-        //    // Sword in the cell [2,10]
-        //    Sword sword = new Sword("Excalibur", 10);
-
-        //    Grid[2, 10].Items.Push(new LegendaryEffect(sword));
-
-        //    // Some gold in the cell [1,1]
-        //    Grid[1, 1].Items.Push(new Mace("Morning Star", 5));
-
-        //    // Spawn the Player
-        //    Grid[0, 0].IsPlayerHere = true;
-        //    PlayerPosition = (0, 0);
-        //}
 
         // Render the room
         public void Render()

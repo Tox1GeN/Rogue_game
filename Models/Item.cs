@@ -13,9 +13,12 @@ namespace Rogue.Models
         public virtual string Name { get; protected set; }
         public virtual string GetDisplayName() => Name;
         public virtual bool CanEquip => false;
+        public virtual bool CanUse => false;
         public virtual bool TwoHanded => false;
         public virtual void Equip(Player player) { }
         public virtual void Unequip(Player player) { }
         public virtual void PickUp(Player player, Room currentRoom) { }
+        public virtual void Use(Player player) { }
+        public virtual Item TryEnchant(Random rng) => this;
     }
 }

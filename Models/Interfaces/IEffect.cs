@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Rogue.Models.Interfaces
 {
-    public interface IUsable : IItem
+    public interface IEffect
     {
-        void Use(Player player);
+        void OnTurnPassed(Player player);
+        bool IsExpired { get; }
+        void Apply(Player player);
     }
 }
