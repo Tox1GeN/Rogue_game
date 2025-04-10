@@ -48,14 +48,18 @@ namespace Rogue.Models.Effects
             }
             if (duration == 0)
             {
-                // Revert luck back to original
-                player.Luck = originalLuck;
+                OnExpire(player);
                 player.DetachEffect(this);
                 
                 //Render.Instance.StartNewActionMessage();
                 //Render.Instance.AddActionLine("The luck boost has ended.");
                 //Render.Instance.FinalizeActionMessage();
             }
+        }
+
+        public void OnExpire(Player player)
+        {
+            player.Luck = originalLuck;
         }
     }
 }

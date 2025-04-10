@@ -14,7 +14,7 @@ namespace Rogue.Models.UsableItems.Potions
         {
             Name = "Panacea";
         }
-
+        public override bool CanUse => true;
         public override void Use(Player player)
         {
             var effects = player.GetActiveEffects();
@@ -27,11 +27,14 @@ namespace Rogue.Models.UsableItems.Potions
             }
 
             // Remove all effects – or you can filter to remove only negative ones if you prefer
-            foreach (var effect in effects)
-                player.DetachEffect(effect);
+            foreach (var effect in effects.ToList())
+            {
+                effect.OnExpire(player);
+                player.DetachEffect(effect);            }
+                
 
             Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine("All active potion effects have been removed by the antidote!");
+            Render.Instance.AddActionLine("All eff removed by the antidote!");
             Render.Instance.FinalizeActionMessage();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Rogue.Core;
 using Rogue.Core.Generation;
+using Rogue.Core.Generation.Builders;
 using Rogue.Core.Generation.Interfaces;
 using Rogue.Models;
 using Rogue.UI;
@@ -57,17 +58,20 @@ namespace Rogue
             while (running)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                if (keyInfo.Key == ConsoleKey.Escape)
-                    running = false;
-                else
+
+                _inputHandlerChain.Handle(keyInfo.Key, _player, _currentRoom);
+                _player.UpdateEffectsPerTurn();
+                Render.Instance.RenderSidePanel(_player, _currentRoom);
+                Render.Instance.RenderMonsterPanel(_player, _currentRoom);
+                Render.Instance.RenderInstructions(_instructions);
+
+                if (ExitHandler.GameShouldExit)
                 {
-                    _inputHandlerChain.Handle(keyInfo.Key, _player, _currentRoom);
-                    _player.UpdateEffectsPerTurn();
-                    Render.Instance.RenderSidePanel(_player, _currentRoom);
-                    Render.Instance.RenderMonsterPanel(_player, _currentRoom);
-                    Render.Instance.RenderInstructions(_instructions);
+                    running = false;
                 }
             }
+
+            Environment.Exit(0);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Rogue.UI.Input_Handlers
 
         public override void Handle(ConsoleKey key, Player player, Room currentRoom)
         {
-            if(key == ConsoleKey.G)
+            if(key == Controls.DropKey)
             {
                 PlayerActions.PressDrop(player, currentRoom);
                 return;

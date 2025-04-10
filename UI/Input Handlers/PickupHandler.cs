@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.UI;
 
 namespace Rogue.UI.Input_Handlers
 {
@@ -12,7 +13,7 @@ namespace Rogue.UI.Input_Handlers
     {
         public override void Handle(ConsoleKey key, Player player, Room currentRoom)
         {
-            if (key == ConsoleKey.E)
+            if (key == Controls.PickUpKey)
             {
                 PlayerActions.PressPickUp(player, currentRoom);
                 return;

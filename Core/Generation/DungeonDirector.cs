@@ -21,7 +21,7 @@ namespace Rogue.Core.Generation
         {
             _builder.InitGrid(rows, cols)
                     .FilledDungeon()
-                    .AddCentralRoom()
+                    //.AddCentralRoom()
                     .AddChambers()
                     .AddPaths()
                     .AddItems()
@@ -35,42 +35,3 @@ namespace Rogue.Core.Generation
         }
     }
 }
-
-
-//public Room ConstructFirstLevelDungeon(int rows = 20, int cols = 40)
-//{
-//    _builder.InitGrid(rows, cols);
-//    _builder.FilledDungeon();
-//    _builder.AddCentralRoom();
-//    _builder.AddChambers();
-//    _builder.AddPotions();
-//    _builder.PlacePlayer(17, 15);
-//    _builder.EnsureConectivity();
-//    return _builder.GetResult();
-//}
-
-//public Room ConstructSecondLevelDungeon(int rows = 20, int cols = 40)
-//{
-//    _builder.InitGrid(rows, cols);
-//    _builder.FilledDungeon();
-//    _builder.AddPaths();
-//    _builder.AddItems();
-//    _builder.AddWeapons();
-//    _builder.PlacePlayer(3, 4);
-//    _builder.EnsureConectivity();
-//    return _builder.GetResult();
-//}
-
-//public Room ConstructThirdLevelDungeon(int rows = 20, int cols = 40)
-//{
-//    _builder.InitGrid(rows, cols);
-//    _builder.FilledDungeon();
-//    _builder.PlacePlayer(3, 4);
-//    _builder.AddPaths();
-//    _builder.AddItems();
-//    _builder.AddWeapons();
-//    _builder.AddPotions();
-//    _builder.AddEnemies();
-//    _builder.EnsureConectivity();
-//    return _builder.GetResult();
-//}

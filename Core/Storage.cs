@@ -38,7 +38,8 @@ namespace Rogue.Core
             () => new StrengthPotion("Berserk's Rage", 3, 5),
             () => new LuckPotion("Leprechaun's water", 5, 10),
             () => new DiscoveryPotion("Small Discover", 20, -1),
-            () => new DiscoveryPotion("Big Discover", 50, -1)
+            () => new DiscoveryPotion("Big Discover", 50, -1),
+            () => new Antidote()
         };
 
         // Regular Item

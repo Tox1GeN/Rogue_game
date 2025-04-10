@@ -12,7 +12,7 @@ namespace Rogue.UI.Input_Handlers
     {
         public override void Handle(ConsoleKey key, Player player, Room currentRoom)
         {
-            if (key == ConsoleKey.F)
+            if (key == Controls.EquipKey)
             {
                 PlayerActions.PressEquip(player, currentRoom);
                 return;

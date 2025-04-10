@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Core.Generation
+namespace Rogue.Core.Generation.Builders
 {
     public class ChainBuilder : IBuilder
     {
         private List<InputHandler> _handlers = new List<InputHandler>();
         private BuildResult _result = new BuildResult();
+
+        private bool pickAndDropHandlerAdded = false;
 
         // The following IBuilder methods are no–ops for this builder.
         public IBuilder InitGrid(int rows, int cols) { return this; }
@@ -30,14 +32,23 @@ namespace Rogue.Core.Generation
 
         public IBuilder AddItems()
         {
-            // Handler for picking up items (E key)
-            _handlers.Add(new PickupHandler());
+            if (!pickAndDropHandlerAdded)
+            {
+                _handlers.Add(new PickupHandler());
+                _handlers.Add(new DropHandler());
+                pickAndDropHandlerAdded = true;
+            }
             return this;
         }
 
         public IBuilder AddWeapons()
         {
-            // Handler for equipping items (F key) and for dropping items (G) can be added here.
+            if (!pickAndDropHandlerAdded)
+            {
+                _handlers.Add(new PickupHandler());
+                _handlers.Add(new DropHandler());
+                pickAndDropHandlerAdded = true;
+            }
             _handlers.Add(new EquipHandler());
             _handlers.Add(new UnequipHandler());
             return this;
@@ -45,7 +56,12 @@ namespace Rogue.Core.Generation
 
         public IBuilder AddPotions()
         {
-            // Handler for using potions (P key)
+            if (!pickAndDropHandlerAdded)
+            {
+                _handlers.Add(new PickupHandler());
+                _handlers.Add(new DropHandler());
+                pickAndDropHandlerAdded = true;
+            }
             _handlers.Add(new UseHandler());
             return this;
         }
@@ -57,7 +73,8 @@ namespace Rogue.Core.Generation
         // When we get the result, automatically link the handlers into one chain.
         public BuildResult GetResult()
         {
-            // Always append a DefaultHandler at the end.
+            // Always append an ExitHandler and a DefaultHandler at the end.
+            _handlers.Add(new ExitHandler());            
             _handlers.Add(new DefaultHandler());
 
             // Link the handlers so that each handler's Next pointer points to the next in the list.

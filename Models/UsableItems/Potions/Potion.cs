@@ -10,8 +10,6 @@ namespace Rogue.Models.UsableItems.Potions
 {
     public abstract class Potion : Item
     {
-        //public override abstract void Use(Player player, int invIndex);
-
         public override bool CanUse => true;
 
         protected int duration;

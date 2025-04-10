@@ -46,7 +46,6 @@ namespace Rogue.Core
                     Console.ForegroundColor = color;
                     Console.Write(symbol);
                     Console.ResetColor();
-                    // Reset so subsequent cells don’t inherit the color
                 }
                 Console.WriteLine();
             }

@@ -39,13 +39,18 @@ namespace Rogue.Models.Effects
             }
             if (duration == 0)
             {
-                player.Strength -= strengthBoost;
+                OnExpire(player);
                 player.DetachEffect(this);
                 
                 //Render.Instance.StartNewActionMessage();
                 //Render.Instance.AddActionLine("Your strength boost has worn off.");
                 //Render.Instance.FinalizeActionMessage();
             }
+        }
+
+        public void OnExpire(Player player)
+        {
+            player.Strength -= strengthBoost;
         }
     }
 }

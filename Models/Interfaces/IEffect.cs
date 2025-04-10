@@ -11,5 +11,6 @@ namespace Rogue.Models.Interfaces
         void OnTurnPassed(Player player);
         bool IsExpired { get; }
         void Apply(Player player);
+        void OnExpire(Player player);
     }
 }

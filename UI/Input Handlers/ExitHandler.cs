@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace Rogue.UI.Input_Handlers
 {
-    public class UseHandler : InputHandler
+    public class ExitHandler : InputHandler
     {
+        public static bool GameShouldExit { get; private set; } = false;
+
         public override void Handle(ConsoleKey key, Player player, Room currentRoom)
         {
-            if (key == Controls.UseKey)
+            if (key == ConsoleKey.Escape)
             {
-                PlayerActions.PressUse(player, currentRoom);
+                GameShouldExit = true;
+                Render.Instance.StartNewActionMessage();
+                Render.Instance.AddActionLine("Exiting the game...");
+                Render.Instance.FinalizeActionMessage();
                 return;
             }
 
-            // pass to the next
             base.Handle(key, player, currentRoom);
         }
     }

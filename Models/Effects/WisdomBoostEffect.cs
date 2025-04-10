@@ -26,7 +26,6 @@ namespace Rogue.Models.Effects
         public void Apply(Player player)
         {
             player.Wisdom += wisdomIncrease;
-            Render.Instance.AddActionLine($"Your wisdom increased by {wisdomIncrease}!");
         }
 
         public void OnTurnPassed(Player player)
@@ -39,13 +38,18 @@ namespace Rogue.Models.Effects
 
             if (duration == 0)
             {
-                player.Wisdom -= wisdomIncrease;
+                OnExpire(player);
                 player.DetachEffect(this);
 
                 //Render.Instance.StartNewActionMessage();
                 //Render.Instance.AddActionLine("Your wisdom boost has worn off.");
                 //Render.Instance.FinalizeActionMessage();
             }
+        }
+
+        public void OnExpire(Player player)
+        {
+            player.Wisdom -= wisdomIncrease;
         }
     }
 }

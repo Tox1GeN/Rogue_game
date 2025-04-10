@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rogue.Core.Generation
+namespace Rogue.Core.Generation.Builders
 {
     public class CompositeBuilder : IBuilder
     {

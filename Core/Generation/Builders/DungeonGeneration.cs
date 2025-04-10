@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rogue.Core.Generation.Interfaces;
 
-namespace Rogue.Core.Generation
+namespace Rogue.Core.Generation.Builders
 {
     public class DungeonGeneration : IBuilder
     {
@@ -47,8 +47,6 @@ namespace Rogue.Core.Generation
 
         public IBuilder AddChambers()
         {
-            // (Your current logic for adding chambers)
-            // Example:
             int chamberCount = 6;
             for (int c = 0; c < chamberCount; c++)
             {
@@ -67,9 +65,59 @@ namespace Rogue.Core.Generation
 
         public IBuilder AddPaths()
         {
-            // (Your current AddPaths logic)
-            // Using your provided code for path carving...
-            // For brevity, assume it’s implemented here.
+            // Start at a random interior position
+            int currentRow = _rng.Next(1, BuildingRoom.Rows - 1);
+            int currentCol = _rng.Next(1, BuildingRoom.Columns - 1);
+            int totalSteps = (BuildingRoom.Rows * BuildingRoom.Columns);  // total carving steps (adjustable)
+            int[] dRow = { -1, 1, 0, 0 };  // direction vectors (up, down, left, right)
+            int[] dCol = { 0, 0, -1, 1 };
+
+            // Choose an initial random direction
+            int currentDir = _rng.Next(4);
+
+            for (int step = 0; step < totalSteps; step++)
+            {
+                BuildingRoom.Grid[currentRow, currentCol].IsWall = false;  // carve out current cell
+
+                // Decide whether to turn or continue straight
+                if (_rng.NextDouble() < 0.3)
+                {
+                    // 30% chance to turn (pick a new direction not directly back on itself)
+                    int newDir;
+                    do
+                    {
+                        newDir = _rng.Next(4);
+                    } while ((currentDir == 0 && newDir == 1) ||
+                             (currentDir == 1 && newDir == 0) ||
+                             (currentDir == 2 && newDir == 3) ||
+                             (currentDir == 3 && newDir == 2));
+                    currentDir = newDir;
+                }
+
+                // Compute next cell in the chosen direction
+                int nextRow = currentRow + dRow[currentDir];
+                int nextCol = currentCol + dCol[currentDir];
+
+                // If next cell is out of bounds or would hit the border, choose a different direction
+                if (nextRow < 1 || nextRow >= BuildingRoom.Rows - 1 ||
+                    nextCol < 1 || nextCol >= BuildingRoom.Columns - 1)
+                {
+                    continue; // skip this step (or optionally pick a different direction)
+                }
+                // If next cell is already carved open and we risk creating a wide open area, 
+                // randomly decide to turn to avoid widening the corridor
+                if (!BuildingRoom.Grid[nextRow, nextCol].IsWall && _rng.NextDouble() < 0.8)
+                {
+                    // 80% chance to turn away from carving an already open cell (preserve narrow tunnel)
+                    currentDir = _rng.Next(4);
+                    continue;
+                }
+
+                // Move into the next cell
+                currentRow = nextRow;
+                currentCol = nextCol;
+            }
+
             return this;
         }
 
@@ -91,8 +139,6 @@ namespace Rogue.Core.Generation
 
         public IBuilder AddItems()
         {
-            // Use your existing logic for placing random items.
-            // Example:
             PlaceObjectsRandomly(
                 3,
                 () => Storage.GetRandomItem(),
@@ -132,7 +178,7 @@ namespace Rogue.Core.Generation
                 var cell = BuildingRoom.Grid[r, c];
                 if (!cell.IsWall && cell.Items.Count == 0 && !cell.IsPlayerHere && cell.Enemy == null)
                 {
-                    cell.Enemy = new Rogue.Models.Enemy("Skeleton", health: 6, attackPower: 3);
+                    cell.Enemy = new Models.Enemy("Skeleton", health: 6, attackPower: 3);
                     enemyCount--;
                 }
                 attempts++;
@@ -151,13 +197,11 @@ namespace Rogue.Core.Generation
         // Expose the final Room object
         public BuildResult GetResult()
         {
-            // Save the generated room into the result.
             _result.Dungeon = BuildingRoom;
             return _result;
         }
 
-        // You can include other private helper methods (like PlaceObjectsRandomly) as needed.
-        private void PlaceObjectsRandomly<T>(int count, Func<T> createFunc, Action<Cell, T> placeAction) where T : Rogue.Models.Item
+        private void PlaceObjectsRandomly<T>(int count, Func<T> createFunc, Action<Cell, T> placeAction) where T : Models.Item
         {
             int placed = 0;
             int attempts = 0;
@@ -346,13 +390,13 @@ namespace Rogue.Core.Generation
             while (r1 != r2)
             {
                 room.Grid[r1, c1].IsWall = false;
-                r1 += (r2 > r1) ? 1 : -1;
+                r1 += r2 > r1 ? 1 : -1;
             }
 
             while (c1 != c2)
             {
                 room.Grid[r1, c1].IsWall = false;
-                c1 += (c2 > c1) ? 1 : -1;
+                c1 += c2 > c1 ? 1 : -1;
             }
         }
 

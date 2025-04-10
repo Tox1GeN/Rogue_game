@@ -14,16 +14,16 @@ namespace Rogue.UI.Input_Handlers
         {
             switch(key)
             {
-                case ConsoleKey.W:
+                case Controls.UpKey:
                     player.Move(-1, 0, currentRoom);  // move up
                     return;  // handled, stop chain
-                case ConsoleKey.S:
+                case Controls.DownKey:
                     player.Move(1, 0, currentRoom);   // move down
                     return;
-                case ConsoleKey.A:
+                case Controls.LeftKey:
                     player.Move(0, -1, currentRoom);  // move left
                     return;
-                case ConsoleKey.D:
+                case Controls.RightKey:
                     player.Move(0, 1, currentRoom);   // move right
                     return;
             }
