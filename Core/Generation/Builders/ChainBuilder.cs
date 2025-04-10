@@ -15,7 +15,6 @@ namespace Rogue.Core.Generation.Builders
 
         private bool pickAndDropHandlerAdded = false;
 
-        // The following IBuilder methods are no–ops for this builder.
         public IBuilder InitGrid(int rows, int cols) { return this; }
         public IBuilder EmptyDungeon() { return this; }
         public IBuilder FilledDungeon() { return this; }
@@ -23,7 +22,6 @@ namespace Rogue.Core.Generation.Builders
         public IBuilder AddPaths() { return this; }
         public IBuilder AddCentralRoom() { return this; }
 
-        // Add the various action handlers.
         public IBuilder AddMovement()
         {
             _handlers.Add(new MovementHandler());

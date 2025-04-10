@@ -26,7 +26,6 @@ namespace Rogue.Models.UsableItems.Potions
                 return;
             }
 
-            // Remove all effects – or you can filter to remove only negative ones if you prefer
             foreach (var effect in effects.ToList())
             {
                 effect.OnExpire(player);
