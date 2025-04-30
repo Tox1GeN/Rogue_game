@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rogue.Models.Combat.Visitors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,20 @@ namespace Rogue.Models.Weapons
 {
     public class MagicStaff : Weapon
     {
-        public int ManaUsage { get; private set; }
-        public bool SplashDamage { get; private set; }
-        public int DistanceOfAttack { get; private set; }
+        public int ManaUsage { get; }
+        public bool SplashDamage { get; }
+        public int DistanceOfAttack { get; }
 
-        public MagicStaff(string name, int damage, int manaUsage, bool splashDmg, int distance)
+        public MagicStaff(string name, int damage, int manaUsage, bool splash, int distance)
         {
             Name = name;
-            Damage = damage;
+            _damage = damage;
             ManaUsage = manaUsage;
-            SplashDamage = splashDmg;
+            SplashDamage = splash;
             DistanceOfAttack = distance;
         }
+
+        public override void Accept(IPlayerAttackVisitor visitor) => visitor.VisitMagicWeapon(this);
+        public override int Damage => _damage;
     }
 }

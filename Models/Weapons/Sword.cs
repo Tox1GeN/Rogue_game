@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rogue.Models.Combat.Visitors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,11 @@ namespace Rogue.Models.Weapons
         public Sword(string name, int damage)
         {
             Name = name;
-            Damage = damage;
+            _damage = damage;
         }
 
-        public override string GetDisplayDmg () => base.GetDisplayDmg();
+        public override void Accept(IPlayerAttackVisitor visitor) => visitor.VisitHeavyWeapon(this);
+        public override int Damage => _damage;
+        public override string GetDisplayDmg() => base.GetDisplayDmg();
     }
 }

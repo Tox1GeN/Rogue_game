@@ -1,4 +1,5 @@
-﻿using Rogue.Models.Interfaces;
+﻿using Rogue.Models.Combat.Visitors;
+using Rogue.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -10,20 +11,15 @@ namespace Rogue.Models.Weapons
 {
     public abstract class Weapon : Equipment, IWeapon
     {
-        public virtual int Damage { get; protected set; }
+        public abstract int Damage { get; }
         public override bool TwoHanded => false;
-
-        // The future idea to add short commet on equip action. For Example:
-        // You've equipped Excalibur. You fill Blessed
-        // public string ShortReview { get; private set; }
-
-        // One more similar idea, but for unequip.
-        // You've unequipped the Curse Sword. You've not felt better.
-        // public string SecretMessage { get; private set; }
+        protected int _damage;
         public override void ModifyDamage(int buffOrNerf)
         {
-            Damage += buffOrNerf;
+            _damage += buffOrNerf;
         }
+        public override Weapon? AsWeapon() => this;
+        public abstract void Accept(IPlayerAttackVisitor visitor);
         public virtual string GetDisplayDmg() => $"Damage: {Damage}";
     }
 }

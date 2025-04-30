@@ -1,4 +1,5 @@
 ﻿using Rogue.Core;
+using Rogue.Core.Combat;
 using Rogue.Models;
 using System;
 using System.Collections.Generic;
@@ -12,24 +13,47 @@ namespace Rogue.UI.Input_Handlers
     {
         public override void Handle(ConsoleKey key, Player player, Room currentRoom)
         {
-            switch(key)
+            switch (key)
             {
                 case Controls.UpKey:
-                    player.Move(-1, 0, currentRoom);  // move up
+                    TryStep(player, currentRoom, -1, 0);  // move up
                     return;  // handled, stop chain
                 case Controls.DownKey:
-                    player.Move(1, 0, currentRoom);   // move down
+                    TryStep(player, currentRoom, 1, 0);  // move down
                     return;
                 case Controls.LeftKey:
-                    player.Move(0, -1, currentRoom);  // move left
+                    TryStep(player, currentRoom, 0, -1);  // move left
                     return;
                 case Controls.RightKey:
-                    player.Move(0, 1, currentRoom);   // move right
+                    TryStep(player, currentRoom, 0, 1); ;   // move right
                     return;
             }
 
             // If not one of the movement keys, pass it to the next handler in the chain.
             base.Handle(key, player, currentRoom);
+        }
+
+        private static void TryStep(Player player, Room room, int dRow, int dCol)
+        {
+            var (row, col) = room.PlayerPosition;
+            int newRow = row + dRow, newCol = col + dCol;
+
+            // bounds & walls
+            if (newRow < 0 || newRow >= room.Rows || newCol < 0 || newCol >= room.Columns)
+                return;
+            Cell targetCell = room.Grid[newRow, newCol];
+            if (targetCell.IsWall) return;
+
+            // ENEMY PRESENT  →  start combat instead of moving
+            if (targetCell.Enemy != null)
+            {
+                targetCell.Enemy.Accept(
+                    new CombatInitiationVisitor(player, room, newRow, newCol));
+                return; // movement cancelled – combat took over
+            }
+
+            // empty floor or items → normal move
+            player.Move(dRow, dCol, room);
         }
     }
 }

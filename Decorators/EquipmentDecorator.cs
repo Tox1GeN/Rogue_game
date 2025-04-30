@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rogue;
 using Rogue.Models;
+using Rogue.Models.Weapons;
 
 namespace Rogue.Decorators
 {
@@ -35,5 +36,7 @@ namespace Rogue.Decorators
         {
             wrappedEquipment.ModifyArmor(buffOrNerf);
         }
+
+        public override Weapon? AsWeapon() => wrappedEquipment.AsWeapon();
     }
 }

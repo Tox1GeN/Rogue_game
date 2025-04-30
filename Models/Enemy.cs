@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rogue.Models.Combat.Visitors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,5 +28,6 @@ namespace Rogue.Models
         }
 
         public override string ToString() => Name;
+        public void Accept(IEnemyVisitor visitor) => visitor.VisitEnemy(this);
     }
 }

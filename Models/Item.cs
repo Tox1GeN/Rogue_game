@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rogue.Core;
+using Rogue.Models.Combat.Visitors;
 using Rogue.Models.Interfaces;
+using Rogue.Models.Weapons;
 
 namespace Rogue.Models
 {
@@ -20,5 +22,7 @@ namespace Rogue.Models
         public virtual void PickUp(Player player, Room currentRoom) { }
         public virtual void Use(Player player) { }
         public virtual Item TryEnchant(Random rng) => this;
+        public virtual void Accept(IDefenseVisitor visitor) { }
+        public virtual Weapon? AsWeapon() => null;
     }
 }

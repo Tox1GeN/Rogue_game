@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rogue.Models.Interfaces;
+using Rogue.Models.Combat.Visitors;
 
 namespace Rogue.Models
 {
-    public class Player 
+    public class Player
     {
         //Player's characteristics
         public int Strength { get; set; }
@@ -61,6 +62,24 @@ namespace Rogue.Models
             activeEffects.Remove(effect);
         }
 
+        // Visitors helper
+        public IWeapon? PrimaryWeaponOrNull()
+        {
+            foreach (var equipment in Hands)
+            {
+                var w = equipment?.AsWeapon();
+                if (w != null) return w;
+            }
+            return null;
+        }
+
+        public void Accept(IDefenseVisitor visitor)
+        {
+            visitor.VisitPlayer(this);
+            foreach (var equipment in Hands)
+                equipment?.Accept(visitor);
+        }
+
         // Notifier of updates
 
         public void UpdateEffectsPerTurn()
@@ -78,7 +97,7 @@ namespace Rogue.Models
         }
 
         // Player Actions
-        public void Move (int deltaX, int deltaY, Room currentRoom)
+        public void Move(int deltaX, int deltaY, Room currentRoom)
         {
             var (row, col) = currentRoom.PlayerPosition;
 
@@ -86,7 +105,7 @@ namespace Rogue.Models
             int newCol = col + deltaY;
 
             // Out of the boundaries 
-            if(newRow < 0 || newRow > 19 || newCol < 0 || newCol > 39)
+            if (newRow < 0 || newRow > 19 || newCol < 0 || newCol > 39)
                 return;
 
             if (currentRoom.Grid[newRow, newCol].IsWall)
@@ -155,7 +174,7 @@ namespace Rogue.Models
                     Hands[0] = itemToEquip;
                     Hands[1] = itemToEquip;
                 }
-                
+
             }
             else
             {
@@ -168,7 +187,7 @@ namespace Rogue.Models
                 {
                     Render.Instance.AddActionLine("Maybe, try another hand...");
                     return false;
-                }                    
+                }
                 else
                     Hands[handNumber] = itemToEquip;
             }
