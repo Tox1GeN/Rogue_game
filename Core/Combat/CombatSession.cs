@@ -38,8 +38,10 @@ namespace Rogue.Core.Combat
                 _ => new NormalAttackVisitor(_player)
             };
 
-            if (_player.PrimaryWeaponOrNull() is Weapon weapon)
+            var weapon = _player.PrimaryWeaponOrNull();
+            if (weapon != null)
                 weapon.Accept(atkVisitor);
+
 
             int dmgToEnemy = atkVisitor.Damage;
             _enemy.TakeDamage(dmgToEnemy);

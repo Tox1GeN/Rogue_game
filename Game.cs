@@ -8,6 +8,7 @@ using Rogue.UI.Input_Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,7 +40,7 @@ namespace Rogue
                             .AddBuilder(chainBuilder);
 
             DungeonDirector director = new DungeonDirector(compositeBuilder);
-            _buildResult = director.ConstructDungeon(20, 40, 3, 3);
+            _buildResult = director.ConstructDungeon( 20, 40, _player, 3, 3);
 
             _currentRoom = _buildResult.Dungeon!;
             _instructions = _buildResult.Instructions;

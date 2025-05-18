@@ -57,7 +57,7 @@ namespace Rogue.Core.Generation.Builders
         }
 
         public IBuilder AddEnemies() { return this; }
-        public IBuilder PlacePlayer(int x, int y) { return this; }
+        public IBuilder PlacePlayer(Player player, int x, int y) { return this; }
 
         public IBuilder EnsureConnectivity()
         {

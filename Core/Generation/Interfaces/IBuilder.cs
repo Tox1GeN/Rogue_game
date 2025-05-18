@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models;
 
 namespace Rogue.Core.Generation.Interfaces
 {
@@ -19,7 +20,7 @@ namespace Rogue.Core.Generation.Interfaces
         IBuilder AddPotions();
         IBuilder AddEnemies();
         IBuilder AddMovement();
-        IBuilder PlacePlayer(int x, int y);
+        IBuilder PlacePlayer(Player player, int x, int y);
         IBuilder EnsureConnectivity();
         BuildResult GetResult();
     }

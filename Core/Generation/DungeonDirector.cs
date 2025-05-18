@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rogue.Core;
 using Rogue.Core.Generation.Interfaces;
+using Rogue.Models;
 
 namespace Rogue.Core.Generation
 {
@@ -17,7 +18,7 @@ namespace Rogue.Core.Generation
             _builder = builder;
         }
 
-        public BuildResult ConstructDungeon(int rows, int cols, int playerX, int playerY)
+        public BuildResult ConstructDungeon(int rows, int cols, Player player, int playerX, int playerY)
         {
             _builder.InitGrid(rows, cols)
                     .FilledDungeon()
@@ -29,7 +30,7 @@ namespace Rogue.Core.Generation
                     .AddPotions()
                     .AddEnemies()
                     .AddMovement()
-                    .PlacePlayer(playerX, playerY)
+                    .PlacePlayer(player, playerX, playerY)
                     .EnsureConnectivity();
             return _builder.GetResult();
         }

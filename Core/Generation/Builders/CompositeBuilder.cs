@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models;
 
 namespace Rogue.Core.Generation.Builders
 {
@@ -87,10 +88,10 @@ namespace Rogue.Core.Generation.Builders
             return this;
         }
 
-        public IBuilder PlacePlayer(int x, int y)
+        public IBuilder PlacePlayer(Player player, int x, int y)
         {
             foreach (var builder in _builders)
-                builder.PlacePlayer(x, y);
+                builder.PlacePlayer(player, x, y);
             return this;
         }
 

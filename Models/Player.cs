@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rogue.Models.Interfaces;
 using Rogue.Models.Combat.Visitors;
+using System.Drawing;
 
 namespace Rogue.Models
 {
@@ -20,6 +21,12 @@ namespace Rogue.Models
         public int Luck { get; set; }
         public int Aggression { get; set; }
         public int Wisdom { get; set; }
+
+        // For multiplayer
+        public int Id { get; set; } = 0;
+        public string Nickname { get; set; } = "Player"; // Default name
+        public ConsoleColor Color { get; set; } = ConsoleColor.White; // Default color
+        public (int Row, int Col) Position { get; set; } = (0, 0); // Player's position in the room
 
         // Player's buffs or negative effects (observers)
         private List<IEffect> activeEffects = new List<IEffect>();
@@ -115,6 +122,9 @@ namespace Rogue.Models
             currentRoom.Grid[row, col].IsPlayerHere = false;
             currentRoom.Grid[newRow, newCol].IsPlayerHere = true;
 
+            currentRoom.Grid[row, col].PlayerOccupant = null;
+            currentRoom.Grid[newRow, newCol].PlayerOccupant = this;
+
             currentRoom.PlayerPosition = (newRow, newCol);
 
 
@@ -122,6 +132,7 @@ namespace Rogue.Models
             Render.Instance.RedrawCell(newRow, newCol, currentRoom);
             Render.Instance.RenderSidePanel(this, currentRoom);
             Render.Instance.RenderMonsterPanel(this, currentRoom);
+
         }
         public bool PickupItem(Room currentRoom)
         {
@@ -250,5 +261,19 @@ namespace Rogue.Models
             Render.Instance.AddActionLine($"You used: {item.GetDisplayName()}");
             // [short remark]: option to put this line in the StrengthPotion, LuckPotion, etc. classes (in the Use() method)
         }
+
+        //public CombatResult Attack(Enemy enemy, AttackType type)
+        //{
+        //    int damage = CalculateDamage(enemy, type);
+        //    enemy.Health -= damage;
+        //    bool enemyDefeated = enemy.Health <= 0;
+        //    return new CombatResult
+        //    {
+        //        Attacker = this,
+        //        Target = enemy,
+        //        DamageDealt = damage,
+        //        TargetDefeated = enemyDefeated
+        //    };
+        //}
     }
 }

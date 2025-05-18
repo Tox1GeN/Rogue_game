@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rogue.Models.Combat.Visitors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,7 @@ namespace Rogue.Models.Interfaces
     {
         int Damage { get; }
         string GetDisplayDmg();
+
+        void Accept(IPlayerAttackVisitor visitor);
     }
 }

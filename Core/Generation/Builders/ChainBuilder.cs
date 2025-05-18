@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models;
 
 namespace Rogue.Core.Generation.Builders
 {
@@ -65,7 +66,7 @@ namespace Rogue.Core.Generation.Builders
         }
 
         public IBuilder AddEnemies() { return this; }
-        public IBuilder PlacePlayer(int x, int y) { return this; }
+        public IBuilder PlacePlayer(Player player, int x, int y) { return this; }
         public IBuilder EnsureConnectivity() { return this; }
 
         // When we get the result, automatically link the handlers into one chain.

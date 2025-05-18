@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rogue.Core.Generation.Interfaces;
+using Rogue.Models;
 
 namespace Rogue.Core.Generation.Builders
 {
@@ -186,11 +187,12 @@ namespace Rogue.Core.Generation.Builders
             return this;
         }
 
-        public IBuilder PlacePlayer(int x, int y)
+        public IBuilder PlacePlayer(Player player, int x, int y)
         {
             BuildingRoom.Grid[x, y].IsWall = false;
             BuildingRoom.PlayerPosition = (x, y);
             BuildingRoom.Grid[x, y].IsPlayerHere = true;
+            BuildingRoom.Grid[x, y].PlayerOccupant = player;
             return this;
         }
 

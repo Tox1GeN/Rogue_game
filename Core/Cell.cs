@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rogue.Models;
 
 namespace Rogue.Core
 {
@@ -13,29 +14,38 @@ namespace Rogue.Core
 
         // Empty cell can have one item or even more in it
         // List of items in the cell
-        public Stack<Rogue.Models.Item> Items { get; set; } = new Stack<Rogue.Models.Item>();
+        public Stack<Item> Items { get; set; } = new Stack<Item>();
 
+        // TODO: comment out this field and replace it with Player PlayerOccupant
         public bool IsPlayerHere { get; set; } = false;
 
+        public Player? PlayerOccupant { get; set; } = null; // which Player is in the cell (if any)
+
         // Enemy in the cell
-        public Rogue.Models.Enemy? Enemy { get; set; }
+        public Enemy? Enemy { get; set; }
+
+
 
         // Get character of the current cell for a rendering
         public (char symbol, ConsoleColor color) GetDisplayCell()
         {
-            if (IsPlayerHere)
-                return ('¶', ConsoleColor.White);
+            if (PlayerOccupant != null)
+            {
+                // Represent players with the same glyph but different colors
+                return ('¶', PlayerOccupant.Color);  // use the player's assigned color
+            }
 
             if (IsWall)
                 return ('█', ConsoleColor.DarkGray);
 
             if (Items.Count > 0)
-                if (Items.Peek().CanEquip)
-                    return (Items.Peek().GetDisplayName()[0], ConsoleColor.Cyan);
-                else if (Items.Peek().CanUse)
-                    return (Items.Peek().GetDisplayName()[0], ConsoleColor.Magenta);
-                else
-                    return ('I', ConsoleColor.Yellow);
+            {
+                Item topItem = Items.Peek();
+                char itemChar = topItem.GetDisplayName()[0];
+                if (topItem.CanEquip)    return (itemChar, ConsoleColor.Cyan);    // e.g., weapons/armor
+                else if (topItem.CanUse) return (itemChar, ConsoleColor.Magenta); // e.g., potions
+                else                     return ('I', ConsoleColor.Yellow);       // other items
+            }
             if (Enemy != null)
                 // First letter of the enemy’s name, colored red
                 return (Enemy.Name[0], ConsoleColor.Red);
