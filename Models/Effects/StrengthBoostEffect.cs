@@ -27,7 +27,7 @@ namespace Rogue.Models.Effects
         public void Apply(Player player)
         {
             player.Strength += strengthBoost;
-            Render.Instance.AddActionLine($"You feel stronger! Your strength increased by {strengthBoost}.");
+            MessageBuffer.Add($"You feel stronger! Your strength increased by {strengthBoost}.");
         }
 
 

@@ -17,9 +17,9 @@ namespace Rogue.UI.Input_Handlers
             if (key == ConsoleKey.Escape)
             {
                 GameShouldExit = true;
-                Render.Instance.StartNewActionMessage();
-                Render.Instance.AddActionLine("Exiting the game...");
-                Render.Instance.FinalizeActionMessage();
+                MessageBuffer.Begin();
+                MessageBuffer.Add("Exiting the game...");
+                MessageBuffer.Commit();
                 return;
             }
 

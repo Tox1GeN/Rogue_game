@@ -148,8 +148,8 @@ namespace Rogue.Models
 
             if (Inventory.AddItem(pickup))
             {
-                Render.Instance.AddActionLine($"You've picked up the {pickup.GetDisplayName()}");
-                Render.Instance.FinalizeActionMessage();
+                MessageBuffer.Add($"You've picked up the {pickup.GetDisplayName()}");
+                MessageBuffer.Commit();
                 return true;
             }
             else
@@ -173,11 +173,12 @@ namespace Rogue.Models
         }
         public bool Equip(Item itemToEquip, int handNumber)
         {
+
             if (itemToEquip.TwoHanded)
             {
                 if (Hands[0] != null || Hands[1] != null)
                 {
-                    Render.Instance.AddActionLine("It is so proud that it cannot be used with other weapons.");
+                    MessageBuffer.Add("It is so proud that it cannot be used with other weapons.");
                     return false;
                 }
                 else
@@ -191,20 +192,18 @@ namespace Rogue.Models
             {
                 if (Hands[0] != null && Hands[1] != null)
                 {
-                    Render.Instance.AddActionLine("Sometimes third arm can be a really good mutation...");
+                    MessageBuffer.Add("Sometimes third arm can be a really good mutation...");
                     return false;
                 }
                 else if (Hands[handNumber] != null)
                 {
-                    Render.Instance.AddActionLine("Maybe, try another hand...");
+                    MessageBuffer.Add("Maybe, try another hand...");
                     return false;
                 }
                 else
                     Hands[handNumber] = itemToEquip;
             }
 
-            // Message about succes equipment.
-            // Potentially call of decorators to change charateristics of the player.
             itemToEquip.Equip(this);
 
             return true;
@@ -212,8 +211,8 @@ namespace Rogue.Models
         public bool Unequip(int handNumber, Room currentRoom)
         {
             if (Hands[handNumber] == null)
-            {
-                Render.Instance.AddActionLine("This hand is already free.");
+            {                
+                MessageBuffer.Add("This hand is already free.");
                 return false;
             }
 
@@ -241,7 +240,7 @@ namespace Rogue.Models
         {
             if (Inventory.Items.Count == Inventory.Capacity)
             {
-                Render.Instance.AddActionLine("Your inventory is full. The item has been dropped on the floor.");
+                MessageBuffer.Add("Your inventory is full. The item has been dropped on the floor.");
 
                 (int row_X, int col_Y) = currentRoom.PlayerPosition;
                 currentRoom.ReceiveDropItem(row_X, col_Y, itemToUnequip);
@@ -249,7 +248,7 @@ namespace Rogue.Models
             else
             {
                 if (Inventory.AddItem(itemToUnequip))
-                    Render.Instance.AddActionLine("You've hid it in the bag");
+                    MessageBuffer.Add("You've hid it in the bag");
             }
         }
 
@@ -258,22 +257,7 @@ namespace Rogue.Models
             item.Use(this);
             Inventory.RemoveItemAt(invIndex);
 
-            Render.Instance.AddActionLine($"You used: {item.GetDisplayName()}");
-            // [short remark]: option to put this line in the StrengthPotion, LuckPotion, etc. classes (in the Use() method)
+            MessageBuffer.Add($"You used: {item.GetDisplayName()}");
         }
-
-        //public CombatResult Attack(Enemy enemy, AttackType type)
-        //{
-        //    int damage = CalculateDamage(enemy, type);
-        //    enemy.Health -= damage;
-        //    bool enemyDefeated = enemy.Health <= 0;
-        //    return new CombatResult
-        //    {
-        //        Attacker = this,
-        //        Target = enemy,
-        //        DamageDealt = damage,
-        //        TargetDefeated = enemyDefeated
-        //    };
-        //}
     }
 }

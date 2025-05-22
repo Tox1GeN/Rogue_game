@@ -20,7 +20,8 @@ namespace Rogue.Decorators
         public override void Equip(Player player)
         {
             base.Equip(player);
-            Render.Instance.AddActionLine("Damage of this weapon is increased by 2.");
+
+            MessageBuffer.Add("Damage of this weapon is increased by 2.");
         }
     }
 }

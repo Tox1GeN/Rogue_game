@@ -31,7 +31,7 @@ namespace Rogue.Models.Effects
 
             // On the 1st turn, i = 1 -> multiplier = n - 1 + 1 = n.
             player.Luck = originalLuck * multiplier;
-            Render.Instance.AddActionLine($"Luck multiplied by {multiplier} for {duration} turns!");
+            MessageBuffer.Add($"Luck multiplied by {multiplier} for {duration} turns!");
         }
 
         public void OnTurnPassed(Player player)
@@ -50,10 +50,6 @@ namespace Rogue.Models.Effects
             {
                 OnExpire(player);
                 player.DetachEffect(this);
-                
-                //Render.Instance.StartNewActionMessage();
-                //Render.Instance.AddActionLine("The luck boost has ended.");
-                //Render.Instance.FinalizeActionMessage();
             }
         }
 

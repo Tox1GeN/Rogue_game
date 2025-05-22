@@ -27,7 +27,7 @@ namespace Rogue.Core.Combat
         public void Start()
         {
             // Always show enemy panel before the round
-            Render.Instance.RenderMonsterPanel(_player, _room);
+            RenderDispatcher.Raise(new RenderMonsterPanelEvent(_player, _room));
 
             /* ---------- PLAYER TURN ---------- */
             AttackType attackChoice = AskAttackType();
@@ -46,13 +46,13 @@ namespace Rogue.Core.Combat
             int dmgToEnemy = atkVisitor.Damage;
             _enemy.TakeDamage(dmgToEnemy);
 
-            Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine($"You deal {dmgToEnemy} damage to {_enemy.Name} (HP {_enemy.Health}).");
-
+            MessageBuffer.Begin();
+            MessageBuffer.Add($"You deal {dmgToEnemy} damage to {_enemy.Name} (HP {_enemy.Health}).");
+            
             /* ---------- MONSTER DEFEATED? ---------- */
             if (_enemy.Health <= 0)
             {
-                Render.Instance.AddActionLine($"{_enemy.Name} was defeated.");
+                MessageBuffer.Add($"{_enemy.Name} was defeated.");
                 EndRound();
                 return;
             }
@@ -61,16 +61,16 @@ namespace Rogue.Core.Combat
             var enemyAttack = new EnemyAttackVisitor(_enemy.AttackPower); // normal attack
             enemyAttack.VisitPlayer(_player);
 
-            Render.Instance.AddActionLine($"{_enemy.Name} hits you for {enemyAttack.DamageDealt} damage (HP {_player.Health}).");
-            Render.Instance.FinalizeActionMessage();
+            MessageBuffer.Add($"{_enemy.Name} hits you for {enemyAttack.DamageDealt} damage (HP {_player.Health}).");
+            MessageBuffer.Commit();
 
             /* ---------- PLAYER DEAD ---------- */
             if (_player.Health <= 0)
             {
-                Render.Instance.StartNewActionMessage();
-                Render.Instance.AddActionLine("You have died with all your braveness…");
-                Render.Instance.AddActionLine("Game Over!");
-                Render.Instance.FinalizeActionMessage();
+                MessageBuffer.Begin();
+                MessageBuffer.Add("You have died with all your braveness…");
+                MessageBuffer.Add("Game Over!");
+                MessageBuffer.Commit();
                 PauseForPlayer();
                 Environment.Exit(0);
             }
@@ -80,9 +80,9 @@ namespace Rogue.Core.Combat
 
         private static AttackType AskAttackType()
         {
-            Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine("Choose attack – N:Normal, S:Stealth, M:Magic");
-            Render.Instance.FinalizeActionMessage();
+            MessageBuffer.Begin();
+            MessageBuffer.Add("Choose attack – N:Normal, S:Stealth, M:Magic");
+            MessageBuffer.Commit();
             ConsoleKey ck = Console.ReadKey(true).Key;
             return ck switch
             {
@@ -94,9 +94,10 @@ namespace Rogue.Core.Combat
 
         private void EndRound()
         {
-            Render.Instance.FinalizeActionMessage();
-            Render.Instance.RenderSidePanel(_player, _room);
-            Render.Instance.RenderMonsterPanel(_player, _room);
+            MessageBuffer.Commit();
+            RenderDispatcher.Raise(new RenderSidePanelEvent(_player, _room));
+            RenderDispatcher.Raise(new RenderMonsterPanelEvent(_player, _room));
+
             PauseForPlayer();
         }
 

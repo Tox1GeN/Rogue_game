@@ -3,6 +3,8 @@ using Rogue.Core.Generation;
 using Rogue.Core.Generation.Builders;
 using Rogue.Core.Generation.Interfaces;
 using Rogue.Models;
+using Rogue.Network.Client;
+using Rogue.Network.Server;
 using Rogue.UI;
 using Rogue.UI.Input_Handlers;
 using System;
@@ -24,6 +26,8 @@ namespace Rogue
 
         public Game()
         {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
             Console.SetWindowSize(120, 40);
             Console.SetBufferSize(120, 40);
             Console.CursorVisible = false;
@@ -40,7 +44,7 @@ namespace Rogue
                             .AddBuilder(chainBuilder);
 
             DungeonDirector director = new DungeonDirector(compositeBuilder);
-            _buildResult = director.ConstructDungeon( 20, 40, _player, 3, 3);
+            _buildResult = director.ConstructDungeon(20, 40, _player, 3, 3);
 
             _currentRoom = _buildResult.Dungeon!;
             _instructions = _buildResult.Instructions;

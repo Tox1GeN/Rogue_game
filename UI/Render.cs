@@ -25,15 +25,6 @@ namespace Rogue.UI
             }
         }
 
-        private Render()
-        {
-            _currentActionLines = new List<string>();
-
-            // Any of one-time initialization code goes here
-        }
-
-        // Store the lines for the *current* action.
-        private List<string> _currentActionLines;
 
         // Configuration for the action window.
         private const int actionWindowX = 0;
@@ -41,41 +32,16 @@ namespace Rogue.UI
         private const int actionWindowWidth = 100;
         private const int actionWindowHeight = 10;
 
-        /// Call this before starting a new action that may produce multiple lines of output.
-        /// Clears the buffer (but not the console).
-        public void StartNewActionMessage()
-        {
-            _currentActionLines.Clear();
-        }
-
-        /// Instead of Console.WriteLine, call this to add lines to the current action's messages.
-        /// We split on newline in case the string has multiple lines.
-        public void AddActionLine(string message)
-        {
-            if (string.IsNullOrEmpty(message))
-                return;
-
-            // If the string has multiple lines (due to \n), split them up.
-            string[] lines = message.Split('\n');
-            foreach (var line in lines)
-            {
-                _currentActionLines.Add(line.TrimEnd('\r'));
-            }
-        }
-
-        public void FinalizeActionMessage()
+        public void DrawActionMessage(IReadOnlyList<string> lines)
         {
             ClearActionWindow();
 
-            // Now, print each line in the region, up to actionWindowHeight lines.
             int lineIndex = 0;
-            foreach (var line in _currentActionLines)
+            foreach (var line in lines)
             {
                 if (lineIndex >= actionWindowHeight)
-                    break; // No more space in the window
+                    break;
 
-                // If a line is longer than actionWindowWidth, either wrap or truncate.
-                // Here we truncate for simplicity.
                 string truncated = line.Length > actionWindowWidth
                                    ? line.Substring(0, actionWindowWidth)
                                    : line;
@@ -85,6 +51,7 @@ namespace Rogue.UI
                 lineIndex++;
             }
         }
+
 
         // Clears the rectangular area where action messages go.
         private void ClearActionWindow()

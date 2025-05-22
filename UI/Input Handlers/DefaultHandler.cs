@@ -12,9 +12,9 @@ namespace Rogue.UI.Input_Handlers
         public override void Handle(ConsoleKey key, Player player, Core.Room currentRoom)
         {
             // This will catch any key that wasn't handled by previous handlers
-            Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine("Nothing happens... (Invalid key pressed)");
-            Render.Instance.FinalizeActionMessage();
+            MessageBuffer.Begin();
+            MessageBuffer.Add("Nothing happens... (Invalid key pressed)");
+            MessageBuffer.Commit();
             // No next handler to call because this is the end of the chain.
         }
     }

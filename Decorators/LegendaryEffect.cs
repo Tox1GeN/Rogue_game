@@ -25,7 +25,7 @@ namespace Rogue.Decorators
             player.Luck += 2;
             player.Strength += 2;
 
-            Render.Instance.AddActionLine("All the stats are increased by 2. Damage of this weapon is increased by 10");
+            MessageBuffer.Add("All the stats are increased by 2. Damage of this weapon is increased by 10");
         }
 
         public override void Unequip(Player player)
@@ -37,7 +37,7 @@ namespace Rogue.Decorators
             player.Luck -= 2;
             player.Strength -= 2;
 
-            Render.Instance.AddActionLine("All the stats are decreased by 2.");
+            MessageBuffer.Add("All the stats are decreased by 2.");
         }
     }
 }

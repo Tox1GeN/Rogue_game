@@ -16,13 +16,13 @@ namespace Rogue.Models
         public override void Equip(Player player)
         {
             // In decorators change a value of a player characteristic here
-            Render.Instance.AddActionLine($"You've equipped the \"{GetDisplayName()}\"."); // {ShortReview}");
+            MessageBuffer.Add($"You've equipped the \"{GetDisplayName()}\"."); // {ShortReview}");
         }
 
         public override void Unequip(Player player)
         {
             // In decorators undo the changes of the value of the player characteristic here
-            Render.Instance.AddActionLine($"You've unequipped the \"{GetDisplayName()}\"."); // {SecretMessage}");
+            MessageBuffer.Add($"You've unequipped the \"{GetDisplayName()}\"."); // {SecretMessage}");
         }
 
         public virtual void ModifyDamage(int buffOrNerf) { }

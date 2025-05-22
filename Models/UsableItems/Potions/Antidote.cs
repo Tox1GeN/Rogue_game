@@ -20,21 +20,21 @@ namespace Rogue.Models.UsableItems.Potions
             var effects = player.GetActiveEffects();
             if (effects.Count == 0)
             {
-                Render.Instance.StartNewActionMessage();
-                Render.Instance.AddActionLine("You feel fine. There are no active effects to remove.");
-                Render.Instance.FinalizeActionMessage();
+                MessageBuffer.Begin();
+                MessageBuffer.Add("You feel fine. There are no active effects to remove.");
+                MessageBuffer.Commit();
                 return;
             }
 
             foreach (var effect in effects.ToList())
             {
                 effect.OnExpire(player);
-                player.DetachEffect(effect);            }
-                
+                player.DetachEffect(effect);
+            }
 
-            Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine("All eff removed by the antidote!");
-            Render.Instance.FinalizeActionMessage();
+            MessageBuffer.Begin();
+            MessageBuffer.Add("All eff removed by the antidote!");
+            MessageBuffer.Commit();
         }
     }
 }

@@ -37,12 +37,12 @@ namespace Rogue.Core.Combat
 
         private void RepaintAfterCombat(int oldR, int oldC, int newR, int newC)
         {
-            Render.Instance.RedrawCell(oldR, oldC, _room);   // where player was
-            Render.Instance.RedrawCell(newR, newC, _room);   // where player is
+            RenderDispatcher.Raise(new RedrawCellEvent(oldR, oldC, _room)); // where enemy was
+            RenderDispatcher.Raise(new RedrawCellEvent(newR, newC, _room)); // where enemy is
 
             // If the enemy glyph was drawn with different coords (rare), clear it too.
             if (oldR != newR || oldC != newC)
-                Render.Instance.RedrawCell(newR, newC, _room);
+                RenderDispatcher.Raise(new RedrawCellEvent(newR, newC, _room));
         }
     }
 }

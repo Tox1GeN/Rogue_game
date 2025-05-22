@@ -1,5 +1,6 @@
 ﻿using Rogue.Core;
 using Rogue.Models;
+using Rogue.Models.Interfaces;
 using Rogue.UI;
 using System;
 using System.Collections.Generic;
@@ -13,193 +14,197 @@ namespace Rogue.UI
     {
         public static void PressPickUp(Player player, Room currentRoom)
         {
-            Render.Instance.StartNewActionMessage();
+            MessageBuffer.Begin();
             if (player.PickupItem(currentRoom))
-                Render.Instance.RenderSidePanel(player, currentRoom);
+                RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
         }
 
         public static void PressDrop(Player player, Room currentRoom)
         {
-            Render.Instance.StartNewActionMessage();
             if (player.Inventory.Items.Count == 0)
             {
-                Render.Instance.AddActionLine("You don't have anything anyway");
-                Render.Instance.FinalizeActionMessage();
+                RenderDispatcher.Raise(new RenderActionMessageEvent(new[]
+                {
+                    "You don't have anything anyway"
+                }));
                 return;
             }
-            Render.Instance.AddActionLine("Enter item's id: ");
 
-            Render.Instance.FinalizeActionMessage();
-
-            string? indexInput = Console.ReadLine();
-
-            Render.Instance.StartNewActionMessage();
-
-            if (int.TryParse(indexInput, out int invIndex))
+            RenderDispatcher.Raise(new RequestTextInputEvent("Enter item's id: ", input =>
             {
-                // Get the item from the inventory
-                Item? item = player.Inventory.ItemAt(invIndex);
-                if (item == null)
+                MessageBuffer.Begin();
+
+                if (int.TryParse(input, out int invIndex))
                 {
-                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
-                    Render.Instance.FinalizeActionMessage();
-                    return;
+                    // Get the item from the inventory
+                    Item? item = player.Inventory.ItemAt(invIndex);
+                    if (item == null)
+                    {
+                        MessageBuffer.Add("Nice try. Look into your inventory one more time. Please...");
+                    }
+                    else
+                    {
+                        if (player.DropItem(invIndex, currentRoom))
+                            MessageBuffer.Add($"You dropped: {item.GetDisplayName()}");
+                        else
+                            MessageBuffer.Add("Couldn't drop the item for some reason.");
+                    }
                 }
                 else
                 {
-                    if (player.DropItem(invIndex, currentRoom))
-                        Render.Instance.AddActionLine($"You dropped: {item.GetDisplayName()}");
+                    MessageBuffer.Add("Invalid input. Must be the number.");
                 }
-            }
-            else
-            {
-                Render.Instance.AddActionLine("Invalid input. Must be the number.");
-            }
-
-            Render.Instance.FinalizeActionMessage();
-            Render.Instance.RenderSidePanel(player, currentRoom);
+                
+                MessageBuffer.Commit();
+                RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+            }));
         }
 
         public static void PressEquip(Player player, Room currentRoom)
         {
-            Render.Instance.StartNewActionMessage();
-            Render.Instance.AddActionLine("Enter equipment's id:");
-            Render.Instance.FinalizeActionMessage();
-
-            string? indexInput = Console.ReadLine();
-            Render.Instance.StartNewActionMessage();
-
-            if (int.TryParse(indexInput, out int invIndex))
+            // Ask for item index
+            RenderDispatcher.Raise(new RequestTextInputEvent("Enter equipment's id:", input =>
             {
-                // Get the item from the inventory
+                if (!int.TryParse(input, out int invIndex))
+                {
+                    RenderDispatcher.Raise(new RenderActionMessageEvent(new[] { "Invalid input. Must be a number." }));
+                    return;
+                }
+
                 Item? item = player.Inventory.ItemAt(invIndex);
                 if (item == null)
                 {
-                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
-                    Render.Instance.FinalizeActionMessage();
+                    RenderDispatcher.Raise(new RenderActionMessageEvent(new[] { "Nice try. Look into your inventory one more time. Please..." }));
                     return;
                 }
-                else if (!item.CanEquip)
-                {
-                    Render.Instance.AddActionLine("This is unequippable");
-                    Render.Instance.FinalizeActionMessage();
-                    return;
-                }
-                else
-                {
-                    if (!item.TwoHanded)
-                    {
-                        Render.Instance.AddActionLine("Choose hand (0 - L, 1 - R): ");
-                        Render.Instance.FinalizeActionMessage();
-                        string? handInput = Console.ReadLine();
 
-                        Render.Instance.StartNewActionMessage();
-                        if (int.TryParse(handInput, out int handNumber) && (handNumber == 0 || handNumber == 1))
+                if (!item.CanEquip)
+                {
+                    RenderDispatcher.Raise(new RenderActionMessageEvent(new[] { "This is unequippable" }));
+                    return;
+                }
+
+                // Two-handed item — equip immediately
+                if (item.TwoHanded)
+                {
+                    MessageBuffer.Begin();
+                    if (player.Equip(item, 0))
+                    {
+                        player.Inventory.RemoveItemAt(invIndex);
+                        MessageBuffer.Add($"You equipped {item.GetDisplayName()} in both hands.");
+                    }
+                    else
+                    {
+                        MessageBuffer.Add("Failed to equip item.");
+                    }
+                    MessageBuffer.Commit();
+                    RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+                    return;
+                }
+
+                // Ask for hand input
+                RenderDispatcher.Raise(new RequestTextInputEvent("Choose hand (0 - L, 1 - R):", handInput =>
+                {
+                    MessageBuffer.Begin();
+
+                    if (int.TryParse(handInput, out int handNumber) && (handNumber == 0 || handNumber == 1))
+                    {
+                        if (player.Equip(item, handNumber))
                         {
-                            if (player.Equip(item, handNumber))
-                                player.Inventory.RemoveItemAt(invIndex);
+                            player.Inventory.RemoveItemAt(invIndex);
+                            MessageBuffer.Add($"You equipped {item.GetDisplayName()} in {(handNumber == 0 ? "left" : "right")} hand.");
                         }
                         else
                         {
-                            Render.Instance.AddActionLine("Invalid hand selection. Must be the number 0 or 1");
+                            MessageBuffer.Add("Failed to equip item.");
                         }
                     }
                     else
                     {
-                        // For two-handed items, call equip without additional prompt.
-                        player.Equip(item, 0);
-                        player.Inventory.RemoveItemAt(invIndex);
+                        MessageBuffer.Add("Invalid hand selection. Must be 0 or 1.");
                     }
-                }
-            }
-            else
-            {
-                Render.Instance.AddActionLine("Invalid input. Must be the number.");
-            }
 
-            Render.Instance.FinalizeActionMessage();
-            Render.Instance.RenderSidePanel(player, currentRoom);
+                    MessageBuffer.Commit();
+                    RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+                }));
+            }));
         }
+
 
         public static void PressUnequip(Player player, Room currentRoom)
         {
-            Render.Instance.StartNewActionMessage();
+            // If both hands are empty
             if (player.Hands[0] == null && player.Hands[1] == null)
             {
-                Render.Instance.AddActionLine("You have nothing in you hands");
-                Render.Instance.FinalizeActionMessage();
+                RenderDispatcher.Raise(new RenderActionMessageEvent(new[] { "You have nothing in your hands." }));
                 return;
             }
-            else if (player.Hands[0] != null && player.Hands[0]!.TwoHanded)
-                player.Unequip(0, currentRoom);
-            else
+
+            // If two-handed item in left
+            if (player.Hands[0] != null && player.Hands[0]!.TwoHanded)
             {
-                Render.Instance.AddActionLine("Choose hand to free (0 - L, 1 - R)");
-                Render.Instance.FinalizeActionMessage();
+                player.Unequip(0, currentRoom);
+                RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+                return;
+            }
 
-                string? hand = Console.ReadLine();
-                Render.Instance.StartNewActionMessage();
+            // Ask user which hand
+            RenderDispatcher.Raise(new RequestTextInputEvent("Choose hand to free (0 - L, 1 - R):", handInput =>
+            {
+                MessageBuffer.Begin();
 
-                if (int.TryParse(hand, out int handNumber))
+                if (int.TryParse(handInput, out int handNumber) && (handNumber == 0 || handNumber == 1))
                 {
                     player.Unequip(handNumber, currentRoom);
                 }
                 else
                 {
-                    Render.Instance.AddActionLine("Invalid input. Must be the number 0 or 1.");
+                    MessageBuffer.Add("Invalid input. Must be 0 or 1.");
                 }
-            }
 
-            Render.Instance.FinalizeActionMessage();
-            Render.Instance.RenderSidePanel(player, currentRoom);
+                MessageBuffer.Commit();
+                RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+            }));
         }
+
 
         public static void PressUse(Player player, Room currentRoom)
         {
-
-
-            Render.Instance.StartNewActionMessage();
             if (player.Inventory.Items.Count == 0)
             {
-                Render.Instance.AddActionLine("You don't have anything anyway");
-                Render.Instance.FinalizeActionMessage();
+                RenderDispatcher.Raise(new RenderActionMessageEvent(new[] { "You don't have anything anyway." }));
                 return;
             }
-            Render.Instance.AddActionLine("Enter item's id: ");
-            Render.Instance.FinalizeActionMessage();
 
-            string? indexInput = Console.ReadLine();
-
-            Render.Instance.StartNewActionMessage();
-
-            if (int.TryParse(indexInput, out int invIndex))
+            RenderDispatcher.Raise(new RequestTextInputEvent("Enter item's id:", input =>
             {
-                // Get the item from the inventory
-                Item? item = player.Inventory.ItemAt(invIndex);
-                if (item == null)
+                MessageBuffer.Begin();
+
+                if (int.TryParse(input, out int invIndex))
                 {
-                    Render.Instance.AddActionLine("Nice try. Look into your inventory one more time. Please...");
-                    Render.Instance.FinalizeActionMessage();
-                    return;
-                }
-                else if (!item.CanUse)
-                {
-                    Render.Instance.AddActionLine("This is unusable");
-                    Render.Instance.FinalizeActionMessage();
-                    return;
+                    Item? item = player.Inventory.ItemAt(invIndex);
+                    if (item == null)
+                    {
+                        MessageBuffer.Add("Nice try. Look into your inventory one more time. Please...");
+                    }
+                    else if (!item.CanUse)
+                    {
+                        MessageBuffer.Add("This item cannot be used.");
+                    }
+                    else
+                    {
+                        player.UseItem(item, invIndex);
+                    }
                 }
                 else
                 {
-                    player.UseItem(item, invIndex);
+                    MessageBuffer.Add("Invalid input. Must be a number.");
                 }
-            }
-            else
-            {
-                Render.Instance.AddActionLine("Invalid input. Must be the number.");
-            }
 
-            Render.Instance.FinalizeActionMessage();
-            Render.Instance.RenderSidePanel(player, currentRoom);
+                MessageBuffer.Commit();
+                RenderDispatcher.Raise(new RenderSidePanelEvent(player, currentRoom));
+            }));
         }
+
     }
 }

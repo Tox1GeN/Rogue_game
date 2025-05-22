@@ -34,5 +34,20 @@ namespace Rogue.Core.Generation
                     .EnsureConnectivity();
             return _builder.GetResult();
         }
+
+        public BuildResult ConstructServerDungeon(int rows, int cols)
+        {
+            _builder.InitGrid(rows, cols)
+                    .FilledDungeon()
+                    .AddChambers()
+                    .AddPaths()
+                    .AddItems()
+                    .AddWeapons()
+                    .AddPotions()
+                    .AddEnemies()
+                    .AddMovement()
+                    .EnsureConnectivity();
+            return _builder.GetResult();
+        }
     }
 }

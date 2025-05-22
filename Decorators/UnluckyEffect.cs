@@ -18,14 +18,14 @@ namespace Rogue.Decorators
         {
             base.Equip(player);
             player.Luck -= 5;
-            Render.Instance.AddActionLine("Luck decreased by 5.");
+            MessageBuffer.Add("Luck decreased by 5.");
         }
 
         public override void Unequip(Player player)
         {
             base.Unequip(player);
             player.Luck += 5;
-            Render.Instance.AddActionLine("Luck restored by 5");
+            MessageBuffer.Add("Luck restored by 5");
         }
     }
 }
