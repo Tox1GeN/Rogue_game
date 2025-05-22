@@ -96,13 +96,6 @@ namespace Rogue
 
             //Game game = new Game();
             //game.Run();
-
-            //var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
-            //ProjectExporter.CreateSnapshot(projectRoot, "MyProjectSnapshot.txt");
-
-
-            //var networkRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Network"));
-            //ProjectExporter.CreateSnapshot(networkRoot, "MyNetworkSnapshot.txt");
         }
     }
 }
