@@ -1,5 +1,6 @@
 ﻿using Rogue.Core;
 using Rogue.Models;
+using Rogue.Models.EnemyBehaviour;
 using Rogue.Models.UnusableItems;
 using Rogue.Network.Dto;
 using Rogue.Network.Dto.Events;
@@ -118,7 +119,7 @@ namespace Rogue.Network.Client
             // Create Enemy objects and place them
             foreach (var eDto in dto.Enemies)
             {
-                var enemy = new Enemy(eDto.Name, eDto.Health, attackPower: 0);
+                var enemy = Storage.GetRandomEnemy();
                 //enemy.Id = eDto.Id;
                 _enemies[eDto.Id] = enemy;
                 _room.Grid[eDto.Row, eDto.Col].Enemy = enemy;
@@ -204,7 +205,7 @@ namespace Rogue.Network.Client
                     if (!_enemies.TryGetValue(cu.EnemyId.Value, out var ene))
                     {
                         // Create new enemy stub if unknown
-                        ene = new Enemy("Enemy", 0, 0);
+                        ene = new Enemy("Enemy", 0, 0, new CalmBehaviour());
                         _enemies[cu.EnemyId.Value] = ene;
                     }
                     cell.Enemy = ene;

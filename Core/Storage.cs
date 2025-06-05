@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rogue.Models.Effects;
+using Rogue.Models.EnemyBehaviour;
 
 namespace Rogue.Core
 {
@@ -50,7 +51,15 @@ namespace Rogue.Core
             () => new Egg("EASTER EGG", "???")
         };
 
-        public static Item GetRandomWeapon()
+        private static List<Func<Enemy>> MonsterFactories { get; } = new List<Func<Enemy>>()
+        {
+            // By default, spawn "Skeleton" enemies with 6 HP and 3 AttackPower.
+            () => new Enemy("Skeleton", health: 15, attackPower: 3, behaviour: new AggressiveBehaviour()),
+            () => new Enemy("Witch", health: 25, attackPower: 1, behaviour: new CowardlyBehaviour()),
+            () => new Enemy("Wolf", health: 30, attackPower: 7, behaviour: new CalmBehaviour())
+        };
+
+    public static Item GetRandomWeapon()
         {
             int index = _rng.Next(WeaponFactories.Count);
             var baseWeapon = WeaponFactories[index]();
@@ -68,6 +77,12 @@ namespace Rogue.Core
         {
             int index = _rng.Next(PotionFactories.Count);
             return PotionFactories[index]();
+        }
+
+        public static Enemy GetRandomEnemy()
+        {
+            int idx = _rng.Next(MonsterFactories.Count);
+            return MonsterFactories[idx]();
         }
     }
 }

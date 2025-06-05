@@ -30,6 +30,7 @@ namespace Rogue.Core.Combat
                 _room.Grid[_destRow, _destCol].IsPlayerHere = true;
                 _room.Grid[_destRow, _destCol].Enemy = null;
                 _room.PlayerPosition = (_destRow, _destCol);
+                _player.Position = (_destRow, _destCol);
 
                 RepaintAfterCombat(cr, cc, _destRow, _destCol);
             }

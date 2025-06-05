@@ -38,7 +38,8 @@ namespace Rogue.Core
             if (IsWall)
                 return ('█', ConsoleColor.DarkGray);
 
-            if (Items.Count > 0)
+            // Make enemy render always on top of any item
+            if (Items.Count > 0 && Enemy == null)
             {
                 Item topItem = Items.Peek();
                 char itemChar = topItem.GetDisplayName()[0];

@@ -47,7 +47,7 @@ namespace Rogue.Models
         {
             Strength = 1;
             Dexterity = 1;
-            Health = 10;
+            Health = 50;
             Luck = 1;
             Aggression = 0;
             Wisdom = 0;
@@ -126,6 +126,7 @@ namespace Rogue.Models
             currentRoom.Grid[newRow, newCol].PlayerOccupant = this;
 
             currentRoom.PlayerPosition = (newRow, newCol);
+            Position = (newRow, newCol);
 
 
             Render.Instance.RedrawCell(row, col, currentRoom);

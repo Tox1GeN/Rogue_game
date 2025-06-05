@@ -170,7 +170,7 @@ namespace Rogue.Core.Generation.Builders
 
         public IBuilder AddEnemies()
         {
-            int enemyCount = 3;
+            int enemyCount = 5;
             int attempts = 0;
             while (enemyCount > 0 && attempts < 1000)
             {
@@ -179,7 +179,9 @@ namespace Rogue.Core.Generation.Builders
                 var cell = BuildingRoom.Grid[r, c];
                 if (!cell.IsWall && cell.Items.Count == 0 && !cell.IsPlayerHere && cell.Enemy == null)
                 {
-                    cell.Enemy = new Models.Enemy("Skeleton", health: 6, attackPower: 3);
+                    var enemy = Storage.GetRandomEnemy();
+                    enemy.Position = (r, c);
+                    cell.Enemy = enemy;
                     enemyCount--;
                 }
                 attempts++;
@@ -193,6 +195,7 @@ namespace Rogue.Core.Generation.Builders
             BuildingRoom.PlayerPosition = (x, y);
             BuildingRoom.Grid[x, y].IsPlayerHere = true;
             BuildingRoom.Grid[x, y].PlayerOccupant = player;
+            player.Position = (x, y);
             return this;
         }
 

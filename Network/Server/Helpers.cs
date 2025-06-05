@@ -13,6 +13,7 @@ using Rogue.Core.Generation.Interfaces;
 using Rogue.Models;
 using Rogue.Network.Dto;
 using Rogue.Network.Dto.Events;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Rogue.Network.Server
 {
@@ -47,6 +48,10 @@ namespace Rogue.Network.Server
                     if (gameState.Dungeon.Grid[i, j].Enemy != null)
                     {
                         gameState.Enemies.Add(gameState.Dungeon.Grid[i, j].Enemy!);
+                        var enemy = gameState.Dungeon.Grid[i, j].Enemy!;
+                        gameState.Enemies.Add(enemy);
+                        // Set the enemy's initial position on spawn
+                        enemy.Position = (i, j);
                     }
                 }
             }
@@ -191,22 +196,35 @@ namespace Rogue.Network.Server
                 (_gameState.CurrentPlayerTurnIndex + 1) % _gameState.Players.Count;
             _gameState.MovesRemaining = 5;
 
+            bool newRound = (_gameState.CurrentPlayerTurnIndex == 0);
             var next = _gameState.Players[_gameState.CurrentPlayerTurnIndex];
             var update = new GameUpdateDTO();
-
+            // If this was the last player of the round, let all enemies take their turns
+            if (newRound)
+            {
+                foreach (Enemy enemy in _gameState.Enemies)
+                {
+                    // Skip enemies that have already acted due to provocation in this round, or are dead
+                    if (enemy.HasActedThisRound || enemy.Health <= 0)
+                        continue;
+                    enemy.TakeTurn(_gameState.Dungeon, _gameState.Players, update);
+                }
+                // Reset the flag for the next round
+                foreach (Enemy enemy in _gameState.Enemies)
+                    enemy.HasActedThisRound = false;
+            }
+            // Prepare next player's turn info
             update.TurnInfo = new TurnDTO
             {
                 PlayerId = next.Id,
                 PlayerIndex = _gameState.CurrentPlayerTurnIndex,
                 MovesRemaining = 5
             };
-
             update.Events.Add(new TurnChangedEvent
             {
                 PlayerId = next.Id,
                 MovesRemaining = 5
             });
-
             Broadcast(JsonSerializer.Serialize(update));
         }
 

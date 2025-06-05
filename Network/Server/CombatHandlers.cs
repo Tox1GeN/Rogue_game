@@ -32,6 +32,11 @@ namespace Rogue.Network.Server
 
             // building update
             var update = new GameUpdateDTO();
+            // If enemy survived this combat exchange, mark it to prevent double action this round
+            if (!combatResult.EnemyDefeated)
+            {
+                pendingCombat.Target.HasActedThisRound = true;
+            }
             update.Events.Add(new CombatResolvedEvent
             {
                 PlayerId = player.Id,
